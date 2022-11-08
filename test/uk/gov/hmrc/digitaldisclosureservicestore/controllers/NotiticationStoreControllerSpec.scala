@@ -21,12 +21,10 @@ import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers, FakeHeaders}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.Mockito
-import org.scalatest.{BeforeAndAfterEach, OptionValues}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneOffset}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
