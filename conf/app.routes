@@ -1,3 +1,4 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.digitaldisclosureservicestore.controllers.MicroserviceHelloWorldController.hello
+GET         /notification/user/:userId/id/:notificationId             controllers.NotificationStoreController.get(userId, notificationId)
+PUT         /notification                                             controllers.NotificationStoreController.set()
