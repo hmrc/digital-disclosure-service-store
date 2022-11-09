@@ -49,4 +49,8 @@ class NotificationStoreController @Inject()(
     }
   }
 
+  def delete(userId: String, notificationId: String): Action[JsValue] = Action.async(parse.json) { _ =>
+    notificationRepository.clear(userId: String, notificationId: String).map(_ => NoContent)
+  }
+
 }

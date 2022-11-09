@@ -90,9 +90,20 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     "return 204" in {
       when(mockNotificationRepository.set(testNotification)) thenReturn Future.successful(true)
 
-      val fakeRequest = FakeRequest(method = "GET", uri = "/notification", headers = FakeHeaders(Seq.empty), body = Json.toJson(testNotification))
+      val fakeRequest = FakeRequest(method = "PUT", uri = "/notification", headers = FakeHeaders(Seq.empty), body = Json.toJson(testNotification))
       val result = controller.set()(fakeRequest)
       status(result) shouldBe Status.NO_CONTENT
     }
   }
+
+  "DELETE /notification/user/:userId/id/:id" should {
+    "return 204" in {
+      when(mockNotificationRepository.clear("123", "456")) thenReturn Future.successful(true)
+
+      val fakeRequest = FakeRequest(method = "DELETE", uri = "/notification", headers = FakeHeaders(Seq.empty), body = Json.toJson(testNotification))
+      val result = controller.delete("123", "456")(fakeRequest)
+      status(result) shouldBe Status.NO_CONTENT
+    }
+  }
+
 }
