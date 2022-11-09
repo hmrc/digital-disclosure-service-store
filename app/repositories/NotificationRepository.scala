@@ -47,12 +47,17 @@ class NotificationRepositoryImpl @Inject()(
           .expireAfter(90, TimeUnit.DAYS)
       ),
       IndexModel(
+        Indexes.ascending("userId"),
+        IndexOptions()
+          .name("userIdIdx")
+      ),
+      IndexModel(
         Indexes.compoundIndex(
           Indexes.ascending("userId"),
           Indexes.ascending("notificationId")
         ),
         IndexOptions()
-          .name("idIdx")
+          .name("idsIdx")
           .unique(true)
       ),
     ),
