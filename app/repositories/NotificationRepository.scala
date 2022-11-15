@@ -44,7 +44,7 @@ class NotificationRepositoryImpl @Inject()(
         Indexes.ascending("lastUpdated"),
         IndexOptions()
           .name("lastUpdatedIdx")
-          .expireAfter(90, TimeUnit.DAYS)
+          .expireAfter(105, TimeUnit.DAYS)
       ),
       IndexModel(
         Indexes.ascending("userId"),
