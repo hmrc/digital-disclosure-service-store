@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package models.notification
+package models.address
 
 import play.api.libs.json.{Json, OFormat}
-import models.address.Address
 
-final case class AboutTheTrust (
-  name: Option[String] = None,
-  address: Option[Address] = None
+final case class Address(
+  line1: String,
+  line2: Option[String],
+  line3: Option[String],
+  line4: String,
+  postcode: String,
+  country: Country
 )
 
-object AboutTheTrust {
-  implicit val format: OFormat[AboutTheTrust] = Json.format[AboutTheTrust]
+object Address {
+  implicit val addressFormat: OFormat[Address] = Json.format[Address]
 }
