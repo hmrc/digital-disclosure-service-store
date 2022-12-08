@@ -37,3 +37,22 @@ final case class Notification (
 object Notification {
   implicit val format: OFormat[Notification] = Json.format[Notification]
 }
+
+final case class EncryptedNotification (
+  userId: String,
+  notificationId: String,
+  lastUpdated: Instant,
+  metadata: Metadata,
+  background: EncryptedBackground,
+  aboutYou: EncryptedAboutYou,
+  aboutTheIndividual: Option[EncryptedAboutTheIndividual] = None,
+  aboutTheCompany: Option[EncryptedAboutTheCompany] = None,
+  aboutTheTrust: Option[EncryptedAboutTheTrust] = None,
+  aboutTheLLP: Option[EncryptedAboutTheLLP] = None,
+  aboutTheEstate: Option[EncryptedAboutTheEstate] = None,
+  customerId: Option[CustomerId] = None
+)
+
+object EncryptedNotification {
+  implicit val format: OFormat[EncryptedNotification] = Json.format[EncryptedNotification]
+}

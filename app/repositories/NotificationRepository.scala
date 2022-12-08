@@ -17,7 +17,7 @@
 package repositories
 
 import config.AppConfig
-import models.notification.Notification
+import models.notification.{EncryptedNotification, Notification}
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
@@ -29,16 +29,19 @@ import java.util.concurrent.TimeUnit
 import com.google.inject.{Inject, ImplementedBy, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+import crypto.NotificationEncrypter
+
 @Singleton
 class NotificationRepositoryImpl @Inject()(
                                    mongoComponent: MongoComponent,
                                    appConfig: AppConfig,
-                                   clock: Clock
+                                   clock: Clock,
+                                   encrypter: NotificationEncrypter
                                  )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[Notification] (
+  extends PlayMongoRepository[EncryptedNotification] (
     collectionName = "notification-of-intent",
     mongoComponent = mongoComponent,
-    domainFormat   = Notification.format,
+    domainFormat   = EncryptedNotification.format,
     indexes        = Seq(
       IndexModel(
         Indexes.ascending("lastUpdated"),
@@ -64,6 +67,8 @@ class NotificationRepositoryImpl @Inject()(
     replaceIndexes = true
   ) with NotificationRepository {
 
+  private val key = appConfig.mongoEncryptionKey
+
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
   def get(userId: String, notificationId: String): Future[Option[Notification]] =
@@ -72,6 +77,7 @@ class NotificationRepositoryImpl @Inject()(
         Filters.equal("userId", userId),
         Filters.equal("notificationId", notificationId)
       ))
+      .map(encrypter.decryptNotification(_, userId, key))
       .headOption()
         
   def get(userId: String): Future[Seq[Notification]] =
@@ -79,6 +85,7 @@ class NotificationRepositoryImpl @Inject()(
       .find(Filters.and(
         Filters.equal("userId", userId)
       ))
+      .map(encrypter.decryptNotification(_, userId, key))
       .toFuture()
 
   def set(notification: Notification): Future[Boolean] = {
@@ -88,7 +95,7 @@ class NotificationRepositoryImpl @Inject()(
           Filters.equal("userId", notification.userId),
           Filters.equal("notificationId", notification.notificationId)
         ),
-        replacement = notification.copy(lastUpdated = clock.instant()),
+        replacement = encrypter.encryptNotification(notification.copy(lastUpdated = clock.instant()), notification.userId, key),
         options     = ReplaceOptions().upsert(true)
       )
       .toFuture()

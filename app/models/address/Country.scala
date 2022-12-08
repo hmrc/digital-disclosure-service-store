@@ -18,6 +18,7 @@ package models.address
 
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
+import crypto.EncryptedValue
 
 final case class Country(
   code: String
@@ -27,4 +28,12 @@ final case class Country(
 
 object Country {
   implicit val countryFormat: OFormat[Country] = Json.format[Country]
+}
+
+final case class EncryptedCountry(
+  code: EncryptedValue
+)
+
+object EncryptedCountry {
+  implicit val countryFormat: OFormat[EncryptedCountry] = Json.format[EncryptedCountry]
 }

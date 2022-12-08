@@ -29,15 +29,17 @@ import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 import java.time.Instant
+import crypto._
 
 class NotificationRepositorySpec extends AnyFreeSpec
   with Matchers with OptionValues
-  with DefaultPlayMongoRepositorySupport[Notification]
+  with DefaultPlayMongoRepositorySupport[EncryptedNotification]
   with ScalaFutures with IntegrationPatience
   with BeforeAndAfterEach {
 
   private val now: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
   private val clock: MutableClock = MutableClock(now)
+  private val encrypter = new NotificationEncrypter(new SecureGCMCipherImpl)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -46,8 +48,9 @@ class NotificationRepositorySpec extends AnyFreeSpec
 
   override protected def repository = new NotificationRepositoryImpl(
     mongoComponent = mongoComponent,
-    appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30)),
-    clock = clock
+    appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key")),
+    clock = clock,
+    encrypter = encrypter
   )
 
   private val testNotification = Notification("user", "id", now, Metadata(), Background(), AboutYou())

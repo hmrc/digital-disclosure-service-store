@@ -20,6 +20,8 @@ import java.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 import models.YesNoOrUnsure
 import models.address.Address
+import crypto.EncryptedValue
+import models.address.EncryptedAddress
 
 final case class AboutTheEstate (
   fullName: Option[String] = None,
@@ -36,4 +38,21 @@ final case class AboutTheEstate (
 
 object AboutTheEstate {
   implicit val format: OFormat[AboutTheEstate] = Json.format[AboutTheEstate]
+}
+
+final case class EncryptedAboutTheEstate (
+  fullName: Option[EncryptedValue] = None,
+  dateOfBirth: Option[EncryptedValue] = None,
+  mainOccupation: Option[String] = None,
+  doTheyHaveANino: Option[YesNoOrUnsure] = None,
+  nino: Option[EncryptedValue] = None,
+  registeredForVAT: Option[YesNoOrUnsure] = None,
+  vatRegNumber: Option[EncryptedValue] = None,
+  registeredForSA: Option[YesNoOrUnsure] = None,
+  sautr: Option[EncryptedValue] = None,
+  address: Option[EncryptedAddress] = None
+)
+
+object EncryptedAboutTheEstate {
+  implicit val format: OFormat[EncryptedAboutTheEstate] = Json.format[EncryptedAboutTheEstate]
 }

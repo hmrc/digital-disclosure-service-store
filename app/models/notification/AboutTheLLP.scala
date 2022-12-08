@@ -18,6 +18,8 @@ package models.notification
 
 import play.api.libs.json.{Json, OFormat}
 import models.address.Address
+import crypto.EncryptedValue
+import models.address.EncryptedAddress
 
 final case class AboutTheLLP (
   name: Option[String] = None,
@@ -26,4 +28,13 @@ final case class AboutTheLLP (
 
 object AboutTheLLP {
   implicit val format: OFormat[AboutTheLLP] = Json.format[AboutTheLLP]
+}
+
+final case class EncryptedAboutTheLLP (
+  name: Option[EncryptedValue] = None,
+  address: Option[EncryptedAddress] = None
+)
+
+object EncryptedAboutTheLLP {
+  implicit val format: OFormat[EncryptedAboutTheLLP] = Json.format[EncryptedAboutTheLLP]
 }

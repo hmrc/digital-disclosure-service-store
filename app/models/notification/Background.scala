@@ -17,6 +17,7 @@
 package models.notification
 
 import play.api.libs.json.{Json, OFormat}
+import crypto.EncryptedValue
 
 final case class Background (
   haveYouReceivedALetter: Option[Boolean] = None,
@@ -30,4 +31,18 @@ final case class Background (
 
 object Background {
   implicit val format: OFormat[Background] = Json.format[Background]
+}
+
+final case class EncryptedBackground (
+  haveYouReceivedALetter: Option[Boolean] = None,
+  letterReferenceNumber: Option[String] = None,
+  disclosureEntity: Option[DisclosureEntity] = None,
+  areYouRepresetingAnOrganisation: Option[Boolean] = None,
+  organisationName: Option[EncryptedValue] = None,
+  offshoreLiabilities: Option[Boolean] = None,
+  onshoreLiabilities: Option[Boolean] = None  
+)
+
+object EncryptedBackground {
+  implicit val format: OFormat[EncryptedBackground] = Json.format[EncryptedBackground]
 }
