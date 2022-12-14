@@ -17,6 +17,7 @@
 package models.address
 
 import play.api.libs.json.{Json, OFormat}
+import crypto.EncryptedValue
 
 final case class Address(
   line1: String,
@@ -30,3 +31,17 @@ final case class Address(
 object Address {
   implicit val addressFormat: OFormat[Address] = Json.format[Address]
 }
+
+final case class EncryptedAddress(
+  line1: EncryptedValue,
+  line2: Option[EncryptedValue],
+  line3: Option[EncryptedValue],
+  line4: Option[EncryptedValue],
+  postcode: Option[EncryptedValue],
+  country: EncryptedValue
+)
+
+object EncryptedAddress {
+  implicit val addressFormat: OFormat[EncryptedAddress] = Json.format[EncryptedAddress]
+}
+
