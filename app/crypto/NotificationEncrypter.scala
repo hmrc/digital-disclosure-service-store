@@ -146,7 +146,7 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
     EncryptedAboutYou (
       fullName = aboutYou.fullName.map(e),
       telephoneNumber = aboutYou.telephoneNumber.map(e),
-      doYouHaveAEmailAddress = aboutYou.doYouHaveAEmailAddress,
+      contactPreferences = aboutYou.contactPreferences,
       emailAddress = aboutYou.emailAddress.map(e),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutYou.mainOccupation,
@@ -158,7 +158,7 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
       sautr = aboutYou.sautr.map(e),
       address = aboutYou.address.map(encryptAddress(_, sessionId, key)),
     )
-  } 
+  }
 
   def decryptAboutYou(
     aboutYou: EncryptedAboutYou,
@@ -170,7 +170,7 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
     AboutYou (
       fullName = aboutYou.fullName.map(d),
       telephoneNumber = aboutYou.telephoneNumber.map(d),
-      doYouHaveAEmailAddress = aboutYou.doYouHaveAEmailAddress,
+      contactPreferences = aboutYou.contactPreferences,
       emailAddress = aboutYou.emailAddress.map(d),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutYou.mainOccupation,
