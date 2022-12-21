@@ -22,35 +22,44 @@ import repositories.NotificationRepository
 import models.notification.Notification
 import scala.concurrent.ExecutionContext
 import play.api.libs.json.{Json, JsValue}
+import uk.gov.hmrc.internalauth.client._
+import controllers.Permissions.internalAuthPermission
 
 @Singleton()
 class NotificationStoreController @Inject()(
     notificationRepository: NotificationRepository,
+    auth: BackendAuthComponents,
     cc: ControllerComponents
   )(implicit ec: ExecutionContext) extends BaseController(cc) {
 
-  def get(userId: String, notificationId: String): Action[AnyContent] = Action.async { 
-    notificationRepository.get(userId, notificationId).map { _ match {
-      case Some(notification) => Ok(Json.toJson(notification))
-      case None => NotFound("Notification not found")
-    }}
-  }
+  val permission = internalAuthPermission("notification")
 
-  def getAll(userId: String): Action[AnyContent] = Action.async { 
-    notificationRepository.get(userId).map { _ match {
-      case Nil => NotFound("Notifications not found")
-      case notifications => Ok(Json.toJson(notifications))
-    }}
-  }
-
-  def set(): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withValidJson[Notification]{ notification =>
-      notificationRepository.set(notification).map(_ => NoContent)
+  def get(userId: String, notificationId: String): Action[AnyContent] = 
+    auth.authorizedAction(permission).async { 
+      notificationRepository.get(userId, notificationId).map { _ match {
+        case Some(notification) => Ok(Json.toJson(notification))
+        case None => NotFound("Notification not found")
+      }}
     }
-  }
 
-  def delete(userId: String, notificationId: String): Action[JsValue] = Action.async(parse.json) { _ =>
-    notificationRepository.clear(userId, notificationId).map(_ => NoContent)
-  }
+  def getAll(userId: String): Action[AnyContent] = 
+    auth.authorizedAction(permission).async { 
+      notificationRepository.get(userId).map { _ match {
+        case Nil => NotFound("Notifications not found")
+        case notifications => Ok(Json.toJson(notifications))
+      }}
+    }
+
+  def set(): Action[JsValue] = 
+    auth.authorizedAction(permission).async(parse.json) { implicit request =>
+      withValidJson[Notification]{ notification =>
+        notificationRepository.set(notification).map(_ => NoContent)
+      }
+    }
+
+  def delete(userId: String, notificationId: String): Action[JsValue] = 
+    auth.authorizedAction(permission).async(parse.json) { _ =>
+      notificationRepository.clear(userId, notificationId).map(_ => NoContent)
+    }
 
 }
