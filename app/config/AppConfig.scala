@@ -24,7 +24,7 @@ class AppConfig @Inject()(config: Configuration) {
 
   val appName: String = config.get[String]("appName")
 
-  lazy val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInSeconds")
+  lazy val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInDays")
 
   val mongoEncryptionKey = config.get[String]("mongodb.encryption.key")
 
