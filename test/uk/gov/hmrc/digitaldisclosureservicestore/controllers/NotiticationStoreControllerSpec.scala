@@ -31,6 +31,8 @@ import scala.concurrent.Future
 import play.api.libs.json.Json
 import models.notification._
 import repositories.NotificationRepository
+import uk.gov.hmrc.internalauth.client._
+import uk.gov.hmrc.internalauth.client.test.{BackendAuthComponentsStub, StubBehaviour}
 
 class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach with MaterializerSpec {
 
@@ -39,8 +41,12 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     Mockito.reset(mockNotificationRepository)
   }
 
-  val mockNotificationRepository = mock[NotificationRepository]
-  private val controller = new NotificationStoreController(mockNotificationRepository, Helpers.stubControllerComponents())
+  implicit val cc = Helpers.stubControllerComponents()
+  val mockNotificationRepository = mock[NotificationRepository]  
+  val mockStubBehaviour = mock[StubBehaviour]
+  val expectedPredicate = Predicate.Permission(Resource(ResourceType("digital-disclosure-service-store"), ResourceLocation("notification")), IAAction("WRITE"))
+  when(mockStubBehaviour.stubAuth(Some(expectedPredicate), Retrieval.EmptyRetrieval)).thenReturn(Future.unit)
+  private val controller = new NotificationStoreController(mockNotificationRepository, BackendAuthComponentsStub(mockStubBehaviour), Helpers.stubControllerComponents())
 
   val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
   val testNotification = Notification("123", "123", instant, Metadata(), Background(), AboutYou())
@@ -49,7 +55,7 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     "return 200" in {
       when(mockNotificationRepository.get("123")) thenReturn Future.successful(Seq(testNotification))
 
-      val fakeRequest = FakeRequest("GET", "/notification/user/123")
+      val fakeRequest = FakeRequest("GET", "/notification/user/123").withHeaders("Authorization" -> "Token some-token")
       val result = controller.getAll("123")(fakeRequest)
       status(result) shouldBe Status.OK
       val body = contentAsJson(result).as[Seq[Notification]]
@@ -59,7 +65,7 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     "return 404" in {
       when(mockNotificationRepository.get("123")) thenReturn Future.successful(Nil)
 
-      val fakeRequest = FakeRequest("GET", "/notification/123")
+      val fakeRequest = FakeRequest("GET", "/notification/123").withHeaders("Authorization" -> "Token some-token")
       val result = controller.getAll("123")(fakeRequest)
       status(result) shouldBe Status.NOT_FOUND
     }
@@ -70,7 +76,7 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     "return 200" in {
       when(mockNotificationRepository.get("123", "456")) thenReturn Future.successful(Some(testNotification))
 
-      val fakeRequest = FakeRequest("GET", "/notification/user/123/id/456")
+      val fakeRequest = FakeRequest("GET", "/notification/user/123/id/456").withHeaders("Authorization" -> "Token some-token")
       val result = controller.get("123", "456")(fakeRequest)
       status(result) shouldBe Status.OK
       val body = contentAsJson(result).as[Notification]
@@ -80,7 +86,7 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     "return 404" in {
       when(mockNotificationRepository.get("123", "456")) thenReturn Future.successful(None)
 
-      val fakeRequest = FakeRequest("GET", "/notification/user/123/id/456")
+      val fakeRequest = FakeRequest("GET", "/notification/user/123/id/456").withHeaders("Authorization" -> "Token some-token")
       val result = controller.get("123", "456")(fakeRequest)
       status(result) shouldBe Status.NOT_FOUND
     }
@@ -90,7 +96,7 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     "return 204" in {
       when(mockNotificationRepository.set(testNotification)) thenReturn Future.successful(true)
 
-      val fakeRequest = FakeRequest(method = "PUT", uri = "/notification", headers = FakeHeaders(Seq.empty), body = Json.toJson(testNotification))
+      val fakeRequest = FakeRequest(method = "PUT", uri = "/notification", headers = FakeHeaders(Seq("Authorization" -> "Token some-token")), body = Json.toJson(testNotification))
       val result = controller.set()(fakeRequest)
       status(result) shouldBe Status.NO_CONTENT
     }
@@ -100,7 +106,7 @@ class NotificationStoreControllerSpec extends AnyWordSpec with Matchers with Moc
     "return 204" in {
       when(mockNotificationRepository.clear("123", "456")) thenReturn Future.successful(true)
 
-      val fakeRequest = FakeRequest(method = "DELETE", uri = "/notification", headers = FakeHeaders(Seq.empty), body = Json.toJson(testNotification))
+      val fakeRequest = FakeRequest(method = "DELETE", uri = "/notification", headers = FakeHeaders(Seq("Authorization" -> "Token some-token")), body = Json.toJson(testNotification))
       val result = controller.delete("123", "456")(fakeRequest)
       status(result) shouldBe Status.NO_CONTENT
     }

@@ -9,9 +9,10 @@ object AppDependencies {
   private val hmrcMongoVersion = "0.73.0"
 
   val compile = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-backend-play-28"  % bootstrapVersion,
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % hmrcMongoVersion,
-    "org.scala-lang.modules"  %% "scala-xml"                    % "1.3.0"
+    "uk.gov.hmrc"             %% "bootstrap-backend-play-28"       % bootstrapVersion,
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"              % hmrcMongoVersion,
+    "org.scala-lang.modules"  %% "scala-xml"                       % "1.3.0",
+    "uk.gov.hmrc"             %% "internal-auth-client-play-28"    % "1.2.0"
   )
 
   val test = Seq(

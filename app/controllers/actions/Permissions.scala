@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package config
+package controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+import uk.gov.hmrc.internalauth.client._
 
-@Singleton
-class AppConfig @Inject()(config: Configuration) {
+object Permissions {
 
-  val appName: String = config.get[String]("appName")
-
-  lazy val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInDays")
-
-  val mongoEncryptionKey = config.get[String]("mongodb.encryption.key")
+  def internalAuthPermission(location: String) = Predicate.Permission(
+    resource = Resource(
+      resourceType = ResourceType("digital-disclosure-service-store"),
+      resourceLocation = ResourceLocation(location)
+    ),
+    action = IAAction("WRITE")
+  )
 
 }

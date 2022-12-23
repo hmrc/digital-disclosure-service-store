@@ -48,7 +48,7 @@ class NotificationRepositorySpec extends AnyFreeSpec
 
   override protected def repository = new NotificationRepositoryImpl(
     mongoComponent = mongoComponent,
-    appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key")),
+    appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key", "mongodb.timeToLiveInDays" -> 30)),
     clock = clock,
     encrypter = encrypter
   )
