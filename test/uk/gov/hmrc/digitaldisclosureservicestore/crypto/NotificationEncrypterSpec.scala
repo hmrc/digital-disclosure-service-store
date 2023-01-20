@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       val model = AboutYou (
         fullName = Some(textToEncrypt),
         telephoneNumber = Some(textToEncrypt),
-        contactPreference = Some(Set("Email","Telephone")),
+        contactPreference = Some(ContactPreferences(Set(Email,Telephone))),
         emailAddress = Some(textToEncrypt),
         dateOfBirth = Some(dateToEncrypt),
         mainOccupation = Some(textToEncrypt),
