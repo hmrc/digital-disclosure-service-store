@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ import models.address.EncryptedAddress
 final case class AboutYou (
     fullName: Option[String] = None,
     telephoneNumber: Option[String] = None,
-    contactPreferences: Option[Set[String]] = None,
     emailAddress: Option[String] = None,
     dateOfBirth: Option[LocalDate] = None,
     mainOccupation: Option[String] = None,
+    contactPreference: Option[ContactPreferences] = None,
     doYouHaveANino: Option[YesNoOrUnsure] = None,
     nino: Option[String] = None,
     registeredForVAT: Option[YesNoOrUnsure] = None,
@@ -46,10 +46,10 @@ object AboutYou {
 final case class EncryptedAboutYou (
      fullName: Option[EncryptedValue] = None,
      telephoneNumber: Option[EncryptedValue] = None,
-     contactPreferences: Option[Set[String]] = None,
      emailAddress: Option[EncryptedValue] = None,
      dateOfBirth: Option[EncryptedValue] = None,
      mainOccupation: Option[String] = None,
+     contactPreference: Option[ContactPreferences] = None,
      doYouHaveANino: Option[YesNoOrUnsure] = None,
      nino: Option[EncryptedValue] = None,
      registeredForVAT: Option[YesNoOrUnsure] = None,

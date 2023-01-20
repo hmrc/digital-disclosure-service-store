@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
     EncryptedAboutYou (
       fullName = aboutYou.fullName.map(e),
       telephoneNumber = aboutYou.telephoneNumber.map(e),
-      contactPreferences = aboutYou.contactPreferences,
+      contactPreference = aboutYou.contactPreference,
       emailAddress = aboutYou.emailAddress.map(e),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutYou.mainOccupation,
@@ -170,7 +170,7 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
     AboutYou (
       fullName = aboutYou.fullName.map(d),
       telephoneNumber = aboutYou.telephoneNumber.map(d),
-      contactPreferences = aboutYou.contactPreferences,
+      contactPreference = aboutYou.contactPreference,
       emailAddress = aboutYou.emailAddress.map(d),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutYou.mainOccupation,
