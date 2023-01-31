@@ -17,6 +17,7 @@
 package crypto
 
 import com.google.inject.{Inject, Singleton}
+import models.{EncryptedNotification, Notification}
 import models.notification._
 import models.address._
 import java.time.LocalDate
@@ -31,16 +32,10 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
 
     EncryptedNotification(
       userId = notification.userId,
-      notificationId = notification.notificationId,
+      submissionId = notification.submissionId,
       lastUpdated = notification.lastUpdated,
       metadata = notification.metadata,
-      background = encryptBackground(notification.background, sessionId, key),
-      aboutYou = encryptAboutYou(notification.aboutYou, sessionId, key),
-      aboutTheIndividual = notification.aboutTheIndividual.map(encryptAboutTheIndividual(_, sessionId, key)),
-      aboutTheCompany = notification.aboutTheCompany.map(encryptAboutTheCompany(_, sessionId, key)),
-      aboutTheTrust = notification.aboutTheTrust.map(encryptAboutTheTrust(_, sessionId, key)),
-      aboutTheLLP = notification.aboutTheLLP.map(encryptAboutTheLLP(_, sessionId, key)),
-      aboutTheEstate = notification.aboutTheEstate.map(encryptAboutTheEstate(_, sessionId, key)),
+      personalDetails = encryptPersonalDetails(notification.personalDetails, sessionId, key),
       customerId = notification.customerId
     )
   } 
@@ -52,17 +47,43 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
 
     Notification(
       userId = notification.userId,
-      notificationId = notification.notificationId,
+      submissionId = notification.submissionId,
       lastUpdated = notification.lastUpdated,
       metadata = notification.metadata,
+      personalDetails = decryptPersonalDetails(notification.personalDetails, sessionId, key),
+      customerId = notification.customerId
+    )
+  }
+
+  def encryptPersonalDetails(
+    notification: PersonalDetails,
+    sessionId: String,
+    key: String): EncryptedPersonalDetails = {
+
+    EncryptedPersonalDetails(
+      background = encryptBackground(notification.background, sessionId, key),
+      aboutYou = encryptAboutYou(notification.aboutYou, sessionId, key),
+      aboutTheIndividual = notification.aboutTheIndividual.map(encryptAboutTheIndividual(_, sessionId, key)),
+      aboutTheCompany = notification.aboutTheCompany.map(encryptAboutTheCompany(_, sessionId, key)),
+      aboutTheTrust = notification.aboutTheTrust.map(encryptAboutTheTrust(_, sessionId, key)),
+      aboutTheLLP = notification.aboutTheLLP.map(encryptAboutTheLLP(_, sessionId, key)),
+      aboutTheEstate = notification.aboutTheEstate.map(encryptAboutTheEstate(_, sessionId, key))
+    )
+  } 
+
+  def decryptPersonalDetails(
+    notification: EncryptedPersonalDetails,
+    sessionId: String,
+    key: String): PersonalDetails = {
+
+    PersonalDetails(
       background = decryptBackground(notification.background, sessionId, key),
       aboutYou = decryptAboutYou(notification.aboutYou, sessionId, key),
       aboutTheIndividual = notification.aboutTheIndividual.map(decryptAboutTheIndividual(_, sessionId, key)),
       aboutTheCompany = notification.aboutTheCompany.map(decryptAboutTheCompany(_, sessionId, key)),
       aboutTheTrust = notification.aboutTheTrust.map(decryptAboutTheTrust(_, sessionId, key)),
       aboutTheLLP = notification.aboutTheLLP.map(decryptAboutTheLLP(_, sessionId, key)),
-      aboutTheEstate = notification.aboutTheEstate.map(decryptAboutTheEstate(_, sessionId, key)),
-      customerId = notification.customerId
+      aboutTheEstate = notification.aboutTheEstate.map(decryptAboutTheEstate(_, sessionId, key))
     )
   }
 
