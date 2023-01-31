@@ -17,11 +17,12 @@
 package repositories
 
 import config.AppConfig
-import models.notification.{EncryptedNotification, Notification}
+import models._
+import models.store._
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
-import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.{Clock, Instant}
@@ -29,19 +30,19 @@ import java.util.concurrent.TimeUnit
 import com.google.inject.{Inject, ImplementedBy, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-import crypto.NotificationEncrypter
+import crypto.SubmissionEncrypter
 
 @Singleton
-class NotificationRepositoryImpl @Inject()(
+class SubmissionRepositoryImpl @Inject()(
                                    mongoComponent: MongoComponent,
                                    appConfig: AppConfig,
                                    clock: Clock,
-                                   encrypter: NotificationEncrypter
+                                   encrypter: SubmissionEncrypter
                                  )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[EncryptedNotification] (
-    collectionName = "notification-of-intent",
+  extends PlayMongoRepository[EncryptedSubmission] (
+    collectionName = "digital-disclosure",
     mongoComponent = mongoComponent,
-    domainFormat   = EncryptedNotification.format,
+    domainFormat   = EncryptedSubmission.format,
     indexes        = Seq(
       IndexModel(
         Indexes.ascending("lastUpdated"),
@@ -57,62 +58,69 @@ class NotificationRepositoryImpl @Inject()(
       IndexModel(
         Indexes.compoundIndex(
           Indexes.ascending("userId"),
-          Indexes.ascending("notificationId")
+          Indexes.ascending("submissionId")
         ),
         IndexOptions()
           .name("idsIdx")
           .unique(true)
       ),
     ),
-    replaceIndexes = true
-  ) with NotificationRepository {
+    replaceIndexes = true,
+    extraCodecs = Codecs.playFormatSumCodecs(EncryptedSubmission.format)
+  ) with SubmissionRepository {
 
   private val key = appConfig.mongoEncryptionKey
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
-  def get(userId: String, notificationId: String): Future[Option[Notification]] =
+  def get(userId: String, submissionId: String): Future[Option[Submission]] =
     collection
       .find(Filters.and(
         Filters.equal("userId", userId),
-        Filters.equal("notificationId", notificationId)
+        Filters.equal("submissionId", submissionId)
       ))
-      .map(encrypter.decryptNotification(_, userId, key))
+      .map(encrypter.decryptSubmission(_, userId, key))
       .headOption()
         
-  def get(userId: String): Future[Seq[Notification]] =
+  def get(userId: String): Future[Seq[Submission]] =
     collection
       .find(Filters.and(
         Filters.equal("userId", userId)
       ))
-      .map(encrypter.decryptNotification(_, userId, key))
+      .map(encrypter.decryptSubmission(_, userId, key))
       .toFuture()
 
-  def set(notification: Notification): Future[Boolean] = {
+  def set(submission: Submission): Future[Boolean] = {
+
+    val updatedSubmission = submission match {
+      case notification: Notification => notification.copy(lastUpdated = clock.instant())
+      case disclosure: FullDisclosure => disclosure.copy(lastUpdated = clock.instant())
+    }
+
     collection
       .replaceOne(
         filter      = Filters.and(
-          Filters.equal("userId", notification.userId),
-          Filters.equal("notificationId", notification.notificationId)
+          Filters.equal("userId", submission.userId),
+          Filters.equal("submissionId", submission.submissionId)
         ),
-        replacement = encrypter.encryptNotification(notification.copy(lastUpdated = clock.instant()), notification.userId, key),
+        replacement = encrypter.encryptSubmission(updatedSubmission, submission.userId, key),
         options     = ReplaceOptions().upsert(true)
       )
       .toFuture()
       .map(_ => true)
   }
 
-  def clear(userId: String, notificationId: String): Future[Boolean] =
+  def clear(userId: String, submissionId: String): Future[Boolean] =
     collection.findOneAndDelete(Filters.and(
       Filters.equal("userId", userId),
-      Filters.equal("notificationId", notificationId)
+      Filters.equal("submissionId", submissionId)
     )).toFuture().map(_ => true)
 }
 
-@ImplementedBy(classOf[NotificationRepositoryImpl])
-trait NotificationRepository {
-  def set(notification: Notification): Future[Boolean]
-  def get(userId: String, notificationId: String): Future[Option[Notification]]
-  def get(userId: String): Future[Seq[Notification]]
-  def clear(userId: String, notificationId: String): Future[Boolean]
+@ImplementedBy(classOf[SubmissionRepositoryImpl])
+trait SubmissionRepository {
+  def set(submission: Submission): Future[Boolean]
+  def get(userId: String, submissionId: String): Future[Option[Submission]]
+  def get(userId: String): Future[Seq[Submission]]
+  def clear(userId: String, submissionId: String): Future[Boolean]
 } 

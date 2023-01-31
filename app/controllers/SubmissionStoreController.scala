@@ -18,48 +18,48 @@ package controllers
 
 import play.api.mvc.{AnyContent, Action, ControllerComponents}
 import javax.inject.{Inject, Singleton}
-import repositories.NotificationRepository
-import models.notification.Notification
+import repositories.SubmissionRepository
+import models.store.Submission
 import scala.concurrent.ExecutionContext
 import play.api.libs.json.{Json, JsValue}
 import uk.gov.hmrc.internalauth.client._
 import controllers.Permissions.internalAuthPermission
 
 @Singleton()
-class NotificationStoreController @Inject()(
-    notificationRepository: NotificationRepository,
+class SubmissionStoreController @Inject()(
+    submissionRepository: SubmissionRepository,
     auth: BackendAuthComponents,
     cc: ControllerComponents
   )(implicit ec: ExecutionContext) extends BaseController(cc) {
 
   val permission = internalAuthPermission("notification")
 
-  def get(userId: String, notificationId: String): Action[AnyContent] = 
+  def get(userId: String, submissionId: String): Action[AnyContent] = 
     auth.authorizedAction(permission).async { 
-      notificationRepository.get(userId, notificationId).map { _ match {
-        case Some(notification) => Ok(Json.toJson(notification))
-        case None => NotFound("Notification not found")
+      submissionRepository.get(userId, submissionId).map { _ match {
+        case Some(submission) => Ok(Json.toJson(submission))
+        case None => NotFound("Submission not found")
       }}
     }
 
   def getAll(userId: String): Action[AnyContent] = 
     auth.authorizedAction(permission).async { 
-      notificationRepository.get(userId).map { _ match {
-        case Nil => NotFound("Notifications not found")
-        case notifications => Ok(Json.toJson(notifications))
+      submissionRepository.get(userId).map { _ match {
+        case Nil => NotFound("Submissions not found")
+        case submissions => Ok(Json.toJson(submissions))
       }}
     }
 
   def set(): Action[JsValue] = 
     auth.authorizedAction(permission).async(parse.json) { implicit request =>
-      withValidJson[Notification]{ notification =>
-        notificationRepository.set(notification).map(_ => NoContent)
+      withValidJson[Submission]{ submission =>
+        submissionRepository.set(submission).map(_ => NoContent)
       }
     }
 
-  def delete(userId: String, notificationId: String): Action[JsValue] = 
+  def delete(userId: String, submissionId: String): Action[JsValue] = 
     auth.authorizedAction(permission).async(parse.json) { _ =>
-      notificationRepository.clear(userId, notificationId).map(_ => NoContent)
+      submissionRepository.clear(userId, submissionId).map(_ => NoContent)
     }
 
 }

@@ -1,6 +1,6 @@
 # microservice specific routes
 
-GET         /notification/user/:userId/id/:notificationId               controllers.NotificationStoreController.get(userId, notificationId)
-GET         /notification/user/:userId                                  controllers.NotificationStoreController.getAll(userId)
-PUT         /notification                                               controllers.NotificationStoreController.set()
-DELETE      /notification/user/:userId/id/:notificationId               controllers.NotificationStoreController.delete(userId, notificationId)
+GET         /submission/user/:userId/id/:submissionId               controllers.SubmissionStoreController.get(userId, submissionId)
+GET         /submission/user/:userId                                controllers.SubmissionStoreController.getAll(userId)
+PUT         /submission                                             controllers.SubmissionStoreController.set()
+DELETE      /submission/user/:userId/id/:submissionId               controllers.SubmissionStoreController.delete(userId, submissionId)

@@ -21,7 +21,8 @@ import org.scalatest.freespec.AnyFreeSpec
 
 import models.notification._
 import models.address._
-import models.YesNoOrUnsure
+import models.store.Notification
+import models.{Metadata, YesNoOrUnsure}
 import java.time.{ZoneOffset, LocalDate, LocalDateTime}
 
 class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
@@ -220,27 +221,37 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       sut.decryptBackground(encryptedModel, associatedText, secretKey) mustEqual model
     }
 
-    "must encrypt/decrypt a Notification" in {
-      val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-      val model = Notification (
-        userId = textToEncrypt,
-        notificationId = textToEncrypt,
-        lastUpdated = instant,
-        metadata = Metadata(),
+    "must encrypt/decrypt a PersonalDetails" in {
+
+      val model = PersonalDetails (
         background = Background(),
         aboutYou = AboutYou(),
         aboutTheIndividual = Some(AboutTheIndividual()),
         aboutTheCompany = Some(AboutTheCompany()),
         aboutTheTrust = Some(AboutTheTrust()),
         aboutTheLLP = Some(AboutTheLLP()),
-        aboutTheEstate = Some(AboutTheEstate()),
+        aboutTheEstate = Some(AboutTheEstate())
+      )   
+
+      val encryptedModel = sut.encryptPersonalDetails(model, associatedText, secretKey)
+      sut.decryptPersonalDetails(encryptedModel, associatedText, secretKey) mustEqual model
+    }
+
+    "must encrypt/decrypt a Notification" in {
+      val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
+      val model = Notification (
+        userId = textToEncrypt,
+        submissionId = textToEncrypt,
+        lastUpdated = instant,
+        metadata = Metadata(),
+        personalDetails = PersonalDetails(Background(), AboutYou()),
         customerId = None
       )   
 
       val encryptedModel = sut.encryptNotification(model, associatedText, secretKey)
 
       encryptedModel.userId mustEqual model.userId
-      encryptedModel.notificationId mustEqual model.notificationId
+      encryptedModel.submissionId mustEqual model.submissionId
       encryptedModel.lastUpdated mustEqual model.lastUpdated
       encryptedModel.metadata mustEqual model.metadata
 

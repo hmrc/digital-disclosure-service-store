@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package repositories
 
 import models.notification._
+import models.{EncryptedSubmission, Metadata}
+import models.store.Notification
 import util.MutableClock
 import config.AppConfig
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -31,29 +33,31 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import java.time.Instant
 import crypto._
 
-class NotificationRepositorySpec extends AnyFreeSpec
+class SubmissionRepositorySpec extends AnyFreeSpec
   with Matchers with OptionValues
-  with DefaultPlayMongoRepositorySupport[EncryptedNotification]
+  with DefaultPlayMongoRepositorySupport[EncryptedSubmission]
   with ScalaFutures with IntegrationPatience
   with BeforeAndAfterEach {
 
   private val now: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
   private val clock: MutableClock = MutableClock(now)
-  private val encrypter = new NotificationEncrypter(new SecureGCMCipherImpl)
+  private val notificationEncrypter = new NotificationEncrypter(new SecureGCMCipherImpl)
+  private val disclosureEncrypter = new FullDisclosureEncrypter(new SecureGCMCipherImpl, notificationEncrypter)
+  private val encrypter = new SubmissionEncrypter(notificationEncrypter, disclosureEncrypter)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     clock.set(now)
   }
 
-  override protected def repository = new NotificationRepositoryImpl(
+  override protected def repository = new SubmissionRepositoryImpl(
     mongoComponent = mongoComponent,
     appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key", "mongodb.timeToLiveInDays" -> 30)),
     clock = clock,
     encrypter = encrypter
   )
 
-  private val testNotification = Notification("user", "id", now, Metadata(), Background(), AboutYou())
+  private val testNotification = Notification("user", "id", now, Metadata(), PersonalDetails(Background(), AboutYou()))
 
   "set" - {
 
@@ -76,9 +80,9 @@ class NotificationRepositorySpec extends AnyFreeSpec
 
     "must return an item that matches the userId and id" in {
       repository.set(testNotification).futureValue
-      repository.set(testNotification.copy(userId = "user2", notificationId = "id")).futureValue
+      repository.set(testNotification.copy(userId = "user2", submissionId = "id")).futureValue
       repository.get("user", "id").futureValue.value mustEqual testNotification
-      repository.get("user2", "id").futureValue.value mustEqual testNotification.copy(userId = "user2", notificationId = "id")
+      repository.get("user2", "id").futureValue.value mustEqual testNotification.copy(userId = "user2", submissionId = "id")
     }
 
     "must return `None` when there is no item matching the userId and id" in {
@@ -91,8 +95,8 @@ class NotificationRepositorySpec extends AnyFreeSpec
 
     "must return all items that match the userId" in {
       repository.set(testNotification).futureValue
-      repository.set(testNotification.copy(userId = "user", notificationId = "id2")).futureValue
-      repository.get("user").futureValue mustEqual Seq(testNotification, testNotification.copy(userId = "user", notificationId = "id2"))
+      repository.set(testNotification.copy(userId = "user", submissionId = "id2")).futureValue
+      repository.get("user").futureValue mustEqual Seq(testNotification, testNotification.copy(userId = "user", submissionId = "id2"))
     }
 
     "must return `Nil` when there is no item matching the userId and id" in {
@@ -105,8 +109,8 @@ class NotificationRepositorySpec extends AnyFreeSpec
 
     "must remove an item if it matches the id and owner" in {
       repository.set(testNotification).futureValue
-      repository.set(testNotification.copy(userId = "user", notificationId = "id2")).futureValue
-      repository.set(testNotification.copy(userId = "user2", notificationId = "id")).futureValue
+      repository.set(testNotification.copy(userId = "user", submissionId = "id2")).futureValue
+      repository.set(testNotification.copy(userId = "user2", submissionId = "id")).futureValue
       repository.clear("user", "id").futureValue
       repository.get("user", "id").futureValue mustNot be (defined)
       repository.get("user", "id2").futureValue mustBe defined
@@ -114,8 +118,8 @@ class NotificationRepositorySpec extends AnyFreeSpec
     }
 
     "must fail silently when trying to remove something that doesn't exist" in {
-      repository.set(testNotification.copy(userId = "user", notificationId = "id2")).futureValue
-      repository.set(testNotification.copy(userId = "user2", notificationId = "id")).futureValue
+      repository.set(testNotification.copy(userId = "user", submissionId = "id2")).futureValue
+      repository.set(testNotification.copy(userId = "user2", submissionId = "id")).futureValue
       repository.clear("user", "id").futureValue
       repository.get("user", "id").futureValue mustNot be (defined)
       repository.get("user", "id2").futureValue mustBe defined

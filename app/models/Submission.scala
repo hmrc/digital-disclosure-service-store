@@ -14,45 +14,50 @@
  * limitations under the License.
  */
 
-package models.notification
+package models.store
 
-import play.api.libs.json.{Json, OFormat}
 import java.time.Instant
+import models.notification._
+import models.disclosure._
+import play.api.libs.json.{Json, OFormat}
+import models.{Metadata, CustomerId}
+
+sealed trait Submission {
+  def userId: String
+  def submissionId: String
+  def lastUpdated: Instant
+}
+
+object Submission {
+  implicit val format: OFormat[Submission] = Json.format[Submission]
+}
 
 final case class Notification (
   userId: String,
-  notificationId: String,
+  submissionId: String,
   lastUpdated: Instant,
   metadata: Metadata,
-  background: Background,
-  aboutYou: AboutYou,
-  aboutTheIndividual: Option[AboutTheIndividual] = None,
-  aboutTheCompany: Option[AboutTheCompany] = None,
-  aboutTheTrust: Option[AboutTheTrust] = None,
-  aboutTheLLP: Option[AboutTheLLP] = None,
-  aboutTheEstate: Option[AboutTheEstate] = None,
+  personalDetails: PersonalDetails,
   customerId: Option[CustomerId] = None
-)
+) extends Submission
 
 object Notification {
   implicit val format: OFormat[Notification] = Json.format[Notification]
 }
 
-final case class EncryptedNotification (
+final case class FullDisclosure (
   userId: String,
-  notificationId: String,
+  submissionId: String,
   lastUpdated: Instant,
   metadata: Metadata,
-  background: EncryptedBackground,
-  aboutYou: EncryptedAboutYou,
-  aboutTheIndividual: Option[EncryptedAboutTheIndividual] = None,
-  aboutTheCompany: Option[EncryptedAboutTheCompany] = None,
-  aboutTheTrust: Option[EncryptedAboutTheTrust] = None,
-  aboutTheLLP: Option[EncryptedAboutTheLLP] = None,
-  aboutTheEstate: Option[EncryptedAboutTheEstate] = None,
+  caseReference: CaseReference,
+  personalDetails: PersonalDetails,
+  offshoreLiabilities: OffshoreLiabilities,
+  otherLiabilities: OtherLiabilities,
+  reasonForDisclosingNow: ReasonForDisclosingNow,
   customerId: Option[CustomerId] = None
-)
+) extends Submission
 
-object EncryptedNotification {
-  implicit val format: OFormat[EncryptedNotification] = Json.format[EncryptedNotification]
+object FullDisclosure {
+  implicit val format: OFormat[FullDisclosure] = Json.format[FullDisclosure]
 }

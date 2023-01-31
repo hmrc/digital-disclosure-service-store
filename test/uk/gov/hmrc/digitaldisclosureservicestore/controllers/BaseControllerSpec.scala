@@ -22,6 +22,8 @@ import play.api.test.{FakeRequest, Helpers, FakeHeaders}
 import scala.concurrent.Future
 import play.api.libs.json.{JsString, Json}
 import models.notification._
+import models.store.Notification
+import models.Metadata
 import org.scalatest.concurrent.ScalaFutures
 import java.time.Instant
 import play.api.mvc.Results._
@@ -30,7 +32,7 @@ class BaseControllerSpec extends AnyWordSpec with Matchers with ScalaFutures  {
 
   object TestController extends BaseController(Helpers.stubControllerComponents())
 
-  val testNotification = Notification("123", "123", Instant.now(), Metadata(), Background(), AboutYou())
+  val testNotification = Notification("123", "123", Instant.now(), Metadata(), PersonalDetails(Background(), AboutYou()))
   
   "withValidJson" should {
     "call f when valid json is passed in" in {
