@@ -18,7 +18,7 @@ package models
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsSuccess, Json, JsError, JsPath}
+import play.api.libs.json.{JsSuccess, Json}
 import models.notification._
 
 class ContactPreferencesSpec extends AnyWordSpec with Matchers  {

@@ -16,17 +16,21 @@
 
 package controllers
 
+import play.api.Logging
 import scala.concurrent.Future
 import play.api.mvc.{Request, Result, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.libs.json.{JsSuccess, JsValue, Reads}
+import play.api.libs.json.{JsSuccess, JsError, JsValue, Reads}
 
-abstract class BaseController(cc: ControllerComponents) extends BackendController(cc) {
+abstract class BaseController(cc: ControllerComponents) extends BackendController(cc) with Logging {
 
   def withValidJson[T](f: T => Future[Result])(implicit request: Request[JsValue], reads: Reads[T]): Future[Result] =
     request.body.validate[T] match {
       case JsSuccess(value, _) => f(value)
-      case _ => Future.successful(BadRequest("Invalid JSON"))
+      case JsError(e) => 
+        val errorString = e.flatMap(_._2).mkString(",")
+        logger.error(s"Error for ${request.body} with errors: $errorString")
+        Future.successful(BadRequest("Invalid JSON"))
     }
 
 }

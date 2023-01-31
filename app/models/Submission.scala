@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package models
+package models.store
 
 import java.time.Instant
 import models.notification._
 import models.disclosure._
 import play.api.libs.json.{Json, OFormat}
+import models.{Metadata, CustomerId}
 
 sealed trait Submission {
   def userId: String

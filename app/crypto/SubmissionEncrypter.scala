@@ -18,6 +18,7 @@ package crypto
 
 import com.google.inject.{Inject, Singleton}
 import models._
+import models.store._
 
 @Singleton
 class SubmissionEncrypter @Inject()(

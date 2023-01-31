@@ -19,7 +19,7 @@ package controllers
 import play.api.mvc.{AnyContent, Action, ControllerComponents}
 import javax.inject.{Inject, Singleton}
 import repositories.SubmissionRepository
-import models.Submission
+import models.store.Submission
 import scala.concurrent.ExecutionContext
 import play.api.libs.json.{Json, JsValue}
 import uk.gov.hmrc.internalauth.client._

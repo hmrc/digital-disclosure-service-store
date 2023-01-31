@@ -21,7 +21,8 @@ import org.scalatest.freespec.AnyFreeSpec
 
 import models.notification._
 import models.address._
-import models.{Metadata, YesNoOrUnsure, Notification}
+import models.store.Notification
+import models.{Metadata, YesNoOrUnsure}
 import java.time.{ZoneOffset, LocalDate, LocalDateTime}
 
 class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {

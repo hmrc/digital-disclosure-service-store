@@ -18,7 +18,8 @@ package crypto
 
 import com.google.inject.{Inject, Singleton}
 import models.disclosure._
-import models.{EncryptedFullDisclosure, FullDisclosure}
+import models.store.FullDisclosure
+import models.EncryptedFullDisclosure
 
 @Singleton
 class FullDisclosureEncrypter @Inject()(

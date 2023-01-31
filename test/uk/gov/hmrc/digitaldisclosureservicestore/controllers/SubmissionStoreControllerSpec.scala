@@ -30,7 +30,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.libs.json.Json
 import models.notification._
-import models.{Notification, Metadata, Submission}
+import models.store.{Notification, Submission}
+import models.Metadata
 import repositories.SubmissionRepository
 import uk.gov.hmrc.internalauth.client._
 import uk.gov.hmrc.internalauth.client.test.{BackendAuthComponentsStub, StubBehaviour}

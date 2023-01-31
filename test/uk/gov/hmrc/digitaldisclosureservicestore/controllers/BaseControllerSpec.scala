@@ -22,7 +22,8 @@ import play.api.test.{FakeRequest, Helpers, FakeHeaders}
 import scala.concurrent.Future
 import play.api.libs.json.{JsString, Json}
 import models.notification._
-import models.{Notification, Metadata}
+import models.store.Notification
+import models.Metadata
 import org.scalatest.concurrent.ScalaFutures
 import java.time.Instant
 import play.api.mvc.Results._

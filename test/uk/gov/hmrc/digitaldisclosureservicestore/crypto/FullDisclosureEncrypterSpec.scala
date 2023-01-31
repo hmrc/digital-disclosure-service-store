@@ -21,6 +21,7 @@ import org.scalatest.freespec.AnyFreeSpec
 
 import models.disclosure._
 import models.notification._
+import models.store._
 import models._
 import java.time.{ZoneOffset, LocalDateTime}
 

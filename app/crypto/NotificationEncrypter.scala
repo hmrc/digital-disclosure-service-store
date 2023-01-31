@@ -17,7 +17,8 @@
 package crypto
 
 import com.google.inject.{Inject, Singleton}
-import models.{EncryptedNotification, Notification}
+import models.store.Notification
+import models.EncryptedNotification
 import models.notification._
 import models.address._
 import java.time.LocalDate

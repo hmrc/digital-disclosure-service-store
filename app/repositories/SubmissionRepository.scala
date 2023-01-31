@@ -18,6 +18,7 @@ package repositories
 
 import config.AppConfig
 import models._
+import models.store._
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent

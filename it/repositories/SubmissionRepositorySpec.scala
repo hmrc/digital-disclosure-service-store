@@ -17,7 +17,8 @@
 package repositories
 
 import models.notification._
-import models.{Notification, EncryptedSubmission, Metadata}
+import models.{EncryptedSubmission, Metadata}
+import models.store.Notification
 import util.MutableClock
 import config.AppConfig
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
