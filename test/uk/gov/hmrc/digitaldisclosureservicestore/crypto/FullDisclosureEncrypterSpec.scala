@@ -91,8 +91,9 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         adviceBusinessName = Some(textToEncrypt),
         personProfession = Some(textToEncrypt),
         adviceGiven = Some(AdviceGiven(textToEncrypt, MonthYear(12, 2012), AdviceContactPreference.Email)),
-        email = Some(WhatEmailAddressCanWeContactYouWith.DifferentEmail),
+        whichEmail = Some(WhichEmailAddressCanWeContactYouWith.DifferentEmail),
         canWeUsePhone = Some(true),
+        email = Some(textToEncrypt),
         telephone = Some(textToEncrypt)
       )
 
@@ -107,8 +108,9 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.adviceBusinessName.get.value must not equal model.adviceBusinessName.get
       encryptedModel.personProfession mustEqual model.personProfession
       encryptedModel.adviceGiven mustEqual model.adviceGiven
-      encryptedModel.email mustEqual model.email
+      encryptedModel.whichEmail mustEqual model.whichEmail
       encryptedModel.canWeUsePhone mustEqual model.canWeUsePhone
+      encryptedModel.email.get.value must not equal model.email.get
       encryptedModel.telephone.get.value must not equal model.telephone.get
 
       sut.decryptReasonForDisclosingNow(encryptedModel, associatedText, secretKey) mustEqual model
