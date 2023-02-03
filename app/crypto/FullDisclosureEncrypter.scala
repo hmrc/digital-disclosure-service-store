@@ -108,8 +108,9 @@ class FullDisclosureEncrypter @Inject()(
       adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(e),
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
-      email = reasonForDisclosingNow.email,
+      whichEmail = reasonForDisclosingNow.whichEmail,
       canWeUsePhone = reasonForDisclosingNow.canWeUsePhone,
+      email = reasonForDisclosingNow.email.map(e),
       telephone = reasonForDisclosingNow.telephone.map(e)
     )
   } 
@@ -131,8 +132,9 @@ class FullDisclosureEncrypter @Inject()(
       adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(d),
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
-      email = reasonForDisclosingNow.email,
+      whichEmail = reasonForDisclosingNow.whichEmail,
       canWeUsePhone = reasonForDisclosingNow.canWeUsePhone,
+      email = reasonForDisclosingNow.email.map(d),
       telephone = reasonForDisclosingNow.telephone.map(d)
     )
   }

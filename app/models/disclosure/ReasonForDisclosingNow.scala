@@ -17,7 +17,7 @@
 package models.disclosure
 
 import play.api.libs.json.{Json, OFormat}
-import models.{AdviceGiven, WhyAreYouMakingADisclosure, WhatEmailAddressCanWeContactYouWith}
+import models.{AdviceGiven, WhyAreYouMakingADisclosure, WhichEmailAddressCanWeContactYouWith}
 import crypto.EncryptedValue
 
 final case class ReasonForDisclosingNow(
@@ -30,8 +30,9 @@ final case class ReasonForDisclosingNow(
   adviceBusinessName: Option[String] = None,
   personProfession: Option[String] = None,
   adviceGiven: Option[AdviceGiven] = None,
-  email: Option[WhatEmailAddressCanWeContactYouWith] = None,
+  whichEmail: Option[WhichEmailAddressCanWeContactYouWith] = None,
   canWeUsePhone: Option[Boolean] = None,
+  email: Option[String] = None,
   telephone: Option[String] = None
 )
 
@@ -49,8 +50,9 @@ final case class EncryptedReasonForDisclosingNow(
   adviceBusinessName: Option[EncryptedValue] = None,
   personProfession: Option[String] = None,
   adviceGiven: Option[AdviceGiven] = None,
-  email: Option[WhatEmailAddressCanWeContactYouWith] = None,
+  whichEmail: Option[WhichEmailAddressCanWeContactYouWith] = None,
   canWeUsePhone: Option[Boolean] = None,
+  email: Option[EncryptedValue] = None,
   telephone: Option[EncryptedValue] = None
 )
 
