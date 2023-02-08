@@ -109,7 +109,7 @@ class FullDisclosureEncrypter @Inject()(
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
       whichEmail = reasonForDisclosingNow.whichEmail,
-      canWeUsePhone = reasonForDisclosingNow.canWeUsePhone,
+      whichPhone = reasonForDisclosingNow.whichPhone,
       email = reasonForDisclosingNow.email.map(e),
       telephone = reasonForDisclosingNow.telephone.map(e)
     )
@@ -133,7 +133,7 @@ class FullDisclosureEncrypter @Inject()(
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
       whichEmail = reasonForDisclosingNow.whichEmail,
-      canWeUsePhone = reasonForDisclosingNow.canWeUsePhone,
+      whichPhone = reasonForDisclosingNow.whichPhone,
       email = reasonForDisclosingNow.email.map(d),
       telephone = reasonForDisclosingNow.telephone.map(d)
     )
