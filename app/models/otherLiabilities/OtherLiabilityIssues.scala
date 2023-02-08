@@ -19,7 +19,7 @@ package models
 sealed trait OtherLiabilityIssues
 
 object OtherLiabilityIssues extends Enumerable.Implicits {
-  
+
   case object EmployerLiabilities extends WithName("employerLiabilities") with OtherLiabilityIssues 
   case object VatIssues extends WithName("vatIssues") with OtherLiabilityIssues
   case object InheritanceTaxIssues extends WithName("inheritanceTaxIssues") with OtherLiabilityIssues
@@ -28,6 +28,7 @@ object OtherLiabilityIssues extends Enumerable.Implicits {
   case object NoExclusion extends WithName("noExclusion") with OtherLiabilityIssues
 
   val values: Seq[OtherLiabilityIssues] = Seq(
+    EmployerLiabilities,
     VatIssues,
     InheritanceTaxIssues,
     Class2National,
