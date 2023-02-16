@@ -55,7 +55,8 @@ final case class FullDisclosure (
   offshoreLiabilities: OffshoreLiabilities,
   otherLiabilities: OtherLiabilities,
   reasonForDisclosingNow: ReasonForDisclosingNow,
-  customerId: Option[CustomerId] = None
+  customerId: Option[CustomerId] = None,
+  offerAmount: Option[BigInt] = None
 ) extends Submission
 
 object FullDisclosure {
