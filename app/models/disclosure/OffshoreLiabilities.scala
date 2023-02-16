@@ -18,6 +18,7 @@ package models.disclosure
 
 import play.api.libs.json.{Json, OFormat}
 import models._
+import models.offshore.CountryOfYourOffshoreLiability
 
 final case class OffshoreLiabilities(
   behaviour: Option[Set[WhyAreYouMakingThisDisclosure]] = None,
@@ -29,11 +30,11 @@ final case class OffshoreLiabilities(
   youHaveNotSelectedCertainTaxYears: Option[String] = None,
   taxBeforeFiveYears: Option[String] = None,
   taxBeforeSevenYears: Option[String] = None,
-  missingYear: Option[String] = None,
-  missingYears: Option[String] = None,
+  taxBeforeNineteenYears: Option[String] = None,
   disregardedCDF: Option[Boolean] = None,
   taxYearLiabilities: Option[Map[String, TaxYearWithLiabilities]] = None,
   taxYearForeignTaxDeductions: Option[Map[String, BigInt]] = None,
+  countryOfYourOffshoreLiability: Option[Map[String, CountryOfYourOffshoreLiability]] = None,
   incomeSource: Option[Set[WhereDidTheUndeclaredIncomeOrGainIncluded]] = None,
   otherIncomeSource: Option[String] = None,
   legalInterpretation: Option[Set[YourLegalInterpretation]] = None,
