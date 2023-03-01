@@ -51,7 +51,7 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
   private val controller = new SubmissionStoreController(mockSubmissionRepository, BackendAuthComponentsStub(mockStubBehaviour), Helpers.stubControllerComponents())
 
   val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-  val testNotification: Submission = Notification("123", "123", instant, Metadata(), PersonalDetails(Background(), AboutYou()))
+  val testNotification: Submission = Notification("123", "123", instant, instant, Metadata(), PersonalDetails(Background(), AboutYou()))
   
   "GET /notification/user/:userId" should {
     "return 200" in {

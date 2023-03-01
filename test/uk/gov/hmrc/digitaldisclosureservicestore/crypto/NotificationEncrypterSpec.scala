@@ -243,6 +243,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         userId = textToEncrypt,
         submissionId = textToEncrypt,
         lastUpdated = instant,
+        created = instant,
         metadata = Metadata(),
         personalDetails = PersonalDetails(Background(), AboutYou()),
         customerId = None

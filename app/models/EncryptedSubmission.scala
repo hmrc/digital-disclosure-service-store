@@ -35,6 +35,7 @@ final case class EncryptedNotification (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
+  created: Instant,
   metadata: Metadata,
   personalDetails: EncryptedPersonalDetails,
   customerId: Option[CustomerId] = None
@@ -48,6 +49,7 @@ final case class EncryptedFullDisclosure (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
+  created: Instant,
   metadata: Metadata,
   caseReference: EncryptedCaseReference,
   personalDetails: EncryptedPersonalDetails,
