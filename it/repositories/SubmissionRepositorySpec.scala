@@ -57,7 +57,7 @@ class SubmissionRepositorySpec extends AnyFreeSpec
     encrypter = encrypter
   )
 
-  private val testNotification = Notification("user", "id", now, Metadata(), PersonalDetails(Background(), AboutYou()))
+  private val testNotification = Notification("user", "id", now, now, Metadata(), PersonalDetails(Background(), AboutYou()))
 
   "set" - {
 
