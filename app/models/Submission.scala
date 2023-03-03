@@ -37,7 +37,7 @@ final case class Notification (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
-  created: Instant,
+  created: Instant = Instant.now(),
   metadata: Metadata,
   personalDetails: PersonalDetails,
   customerId: Option[CustomerId] = None
@@ -51,7 +51,7 @@ final case class FullDisclosure (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
-  created: Instant,
+  created: Instant = Instant.now(),
   metadata: Metadata,
   caseReference: CaseReference,
   personalDetails: PersonalDetails,
