@@ -35,6 +35,7 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
       userId = notification.userId,
       submissionId = notification.submissionId,
       lastUpdated = notification.lastUpdated,
+      created = notification.created,
       metadata = notification.metadata,
       personalDetails = encryptPersonalDetails(notification.personalDetails, sessionId, key),
       customerId = notification.customerId
@@ -50,6 +51,7 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
       userId = notification.userId,
       submissionId = notification.submissionId,
       lastUpdated = notification.lastUpdated,
+      created = notification.created,
       metadata = notification.metadata,
       personalDetails = decryptPersonalDetails(notification.personalDetails, sessionId, key),
       customerId = notification.customerId

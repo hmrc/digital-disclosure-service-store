@@ -43,6 +43,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         userId = textToEncrypt,
         submissionId = textToEncrypt,
         lastUpdated = instant,
+        created = instant,
         metadata = Metadata(),
         caseReference = CaseReference(),
         personalDetails = PersonalDetails(Background(), AboutYou()),

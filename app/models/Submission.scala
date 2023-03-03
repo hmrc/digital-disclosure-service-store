@@ -26,6 +26,7 @@ sealed trait Submission {
   def userId: String
   def submissionId: String
   def lastUpdated: Instant
+  def created: Instant
 }
 
 object Submission {
@@ -36,6 +37,7 @@ final case class Notification (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
+  created: Instant,
   metadata: Metadata,
   personalDetails: PersonalDetails,
   customerId: Option[CustomerId] = None
@@ -49,6 +51,7 @@ final case class FullDisclosure (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
+  created: Instant,
   metadata: Metadata,
   caseReference: CaseReference,
   personalDetails: PersonalDetails,

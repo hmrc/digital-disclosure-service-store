@@ -32,7 +32,7 @@ class BaseControllerSpec extends AnyWordSpec with Matchers with ScalaFutures  {
 
   object TestController extends BaseController(Helpers.stubControllerComponents())
 
-  val testNotification = Notification("123", "123", Instant.now(), Metadata(), PersonalDetails(Background(), AboutYou()))
+  val testNotification = Notification("123", "123", Instant.now(), Instant.now(), Metadata(), PersonalDetails(Background(), AboutYou()))
   
   "withValidJson" should {
     "call f when valid json is passed in" in {
