@@ -38,7 +38,8 @@ final case class EncryptedNotification (
   created: Instant,
   metadata: Metadata,
   personalDetails: EncryptedPersonalDetails,
-  customerId: Option[CustomerId] = None
+  customerId: Option[CustomerId] = None,
+  madeDeclaration: Boolean = false
 ) extends EncryptedSubmission
 
 object EncryptedNotification {
@@ -56,7 +57,8 @@ final case class EncryptedFullDisclosure (
   offshoreLiabilities: OffshoreLiabilities,
   otherLiabilities: OtherLiabilities,
   reasonForDisclosingNow: EncryptedReasonForDisclosingNow,
-  customerId: Option[CustomerId] = None
+  customerId: Option[CustomerId] = None,
+  madeDeclaration: Boolean = false
 ) extends EncryptedSubmission
 
 object EncryptedFullDisclosure {
