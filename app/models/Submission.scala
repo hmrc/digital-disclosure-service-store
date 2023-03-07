@@ -40,7 +40,8 @@ final case class Notification (
   created: Instant = Instant.now(),
   metadata: Metadata,
   personalDetails: PersonalDetails,
-  customerId: Option[CustomerId] = None
+  customerId: Option[CustomerId] = None,
+  madeDeclaration: Boolean = false
 ) extends Submission
 
 object Notification {
@@ -59,7 +60,8 @@ final case class FullDisclosure (
   otherLiabilities: OtherLiabilities,
   reasonForDisclosingNow: ReasonForDisclosingNow,
   customerId: Option[CustomerId] = None,
-  offerAmount: Option[BigInt] = None
+  offerAmount: Option[BigInt] = None,
+  madeDeclaration: Boolean = false
 ) extends Submission
 
 object FullDisclosure {
