@@ -43,7 +43,8 @@ class FullDisclosureEncrypter @Inject()(
       offshoreLiabilities = fullDisclosure.offshoreLiabilities,
       otherLiabilities = fullDisclosure.otherLiabilities,
       reasonForDisclosingNow = encryptReasonForDisclosingNow(fullDisclosure.reasonForDisclosingNow, sessionId, key),
-      customerId = fullDisclosure.customerId
+      customerId = fullDisclosure.customerId,
+      madeDeclaration = fullDisclosure.madeDeclaration
     )
   } 
 
@@ -63,7 +64,8 @@ class FullDisclosureEncrypter @Inject()(
       offshoreLiabilities = fullDisclosure.offshoreLiabilities,
       otherLiabilities = fullDisclosure.otherLiabilities,
       reasonForDisclosingNow = decryptReasonForDisclosingNow(fullDisclosure.reasonForDisclosingNow, sessionId, key),
-      customerId = fullDisclosure.customerId
+      customerId = fullDisclosure.customerId,
+      madeDeclaration = fullDisclosure.madeDeclaration
     )
   }
 
