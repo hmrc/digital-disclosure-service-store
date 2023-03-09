@@ -42,9 +42,7 @@ final case class OnshoreLiabilities(
   howManyProperties: Option[String] = None,
   corporationTaxLiabilities: Option[Set[CorporationTaxLiability]] = None,
   directorLoanAccountLiabilities: Option[Set[DirectorLoanAccountLiabilities]] = None
-) {
-  def isComplete = false
-}
+)
 
 object OnshoreLiabilities {
   implicit val format: OFormat[OnshoreLiabilities] = Json.format[OnshoreLiabilities]
