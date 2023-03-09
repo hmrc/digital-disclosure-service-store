@@ -47,6 +47,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         metadata = Metadata(),
         caseReference = CaseReference(),
         personalDetails = PersonalDetails(Background(), AboutYou()),
+        onshoreLiabilities = Some(OnshoreLiabilities()),
         offshoreLiabilities = OffshoreLiabilities(),
         otherLiabilities = OtherLiabilities(),
         reasonForDisclosingNow = ReasonForDisclosingNow(),
@@ -59,6 +60,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.submissionId mustEqual model.submissionId
       encryptedModel.lastUpdated mustEqual model.lastUpdated
       encryptedModel.metadata mustEqual model.metadata
+      encryptedModel.onshoreLiabilities mustEqual model.onshoreLiabilities
       encryptedModel.offshoreLiabilities mustEqual model.offshoreLiabilities
       encryptedModel.otherLiabilities mustEqual model.otherLiabilities
 

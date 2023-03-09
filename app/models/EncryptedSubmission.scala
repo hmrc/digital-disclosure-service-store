@@ -54,6 +54,7 @@ final case class EncryptedFullDisclosure (
   metadata: Metadata,
   caseReference: EncryptedCaseReference,
   personalDetails: EncryptedPersonalDetails,
+  onshoreLiabilities: Option[OnshoreLiabilities] = None,
   offshoreLiabilities: OffshoreLiabilities,
   otherLiabilities: OtherLiabilities,
   reasonForDisclosingNow: EncryptedReasonForDisclosingNow,
