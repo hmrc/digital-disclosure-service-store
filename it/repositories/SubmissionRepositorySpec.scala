@@ -17,8 +17,9 @@
 package repositories
 
 import models.notification._
+import models.disclosure._
 import models.{EncryptedSubmission, Metadata}
-import models.store.Notification
+import models.store.{FullDisclosure, Notification}
 import util.MutableClock
 import config.AppConfig
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -58,6 +59,20 @@ class SubmissionRepositorySpec extends AnyFreeSpec
   )
 
   private val testNotification = Notification("user", "id", now, now, Metadata(), PersonalDetails(Background(), AboutYou()))
+  private val testDisclosure = FullDisclosure(
+    userId = "user2",
+    submissionId = "id2",
+    lastUpdated = now,
+    created = now,
+    metadata = Metadata(),
+    caseReference = CaseReference(),
+    personalDetails = PersonalDetails(Background(), AboutYou()),
+    onshoreLiabilities = Some(OnshoreLiabilities()),
+    offshoreLiabilities = OffshoreLiabilities(),
+    otherLiabilities = OtherLiabilities(),
+    reasonForDisclosingNow = ReasonForDisclosingNow(),
+    customerId = None
+  )   
 
   "set" - {
 
@@ -66,6 +81,10 @@ class SubmissionRepositorySpec extends AnyFreeSpec
       repository.get("user", "id").futureValue.value mustEqual testNotification
     }
 
+    "must insert if no record exists for a disclosure" in {
+      repository.set(testDisclosure).futureValue mustEqual true
+      repository.get("user2", "id2").futureValue.value mustEqual testDisclosure
+    }
 
     "must update a record if it exists and return it" in {
       val expected = testNotification.copy(metadata = Metadata(reference = Some("12345")), lastUpdated = clock.instant())

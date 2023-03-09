@@ -57,6 +57,7 @@ final case class FullDisclosure (
   caseReference: CaseReference,
   personalDetails: PersonalDetails,
   offshoreLiabilities: OffshoreLiabilities,
+  onshoreLiabilities: Option[OnshoreLiabilities] = None,
   otherLiabilities: OtherLiabilities,
   reasonForDisclosingNow: ReasonForDisclosingNow,
   customerId: Option[CustomerId] = None,
