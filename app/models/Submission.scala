@@ -30,7 +30,7 @@ sealed trait Submission {
 }
 
 object Submission {
-  implicit val format: OFormat[Submission] = Json.format[Submission]
+  implicit val format: OFormat[Submission] = Json.using[Json.WithDefaultValues].format[Submission]
 }
 
 final case class Notification (
@@ -45,7 +45,7 @@ final case class Notification (
 ) extends Submission
 
 object Notification {
-  implicit val format: OFormat[Notification] = Json.format[Notification]
+  implicit val format: OFormat[Notification] = Json.using[Json.WithDefaultValues].format[Notification]
 }
 
 final case class FullDisclosure (
@@ -66,5 +66,5 @@ final case class FullDisclosure (
 ) extends Submission
 
 object FullDisclosure {
-  implicit val format: OFormat[FullDisclosure] = Json.format[FullDisclosure]
+  implicit val format: OFormat[FullDisclosure] = Json.using[Json.WithDefaultValues].format[FullDisclosure]
 }
