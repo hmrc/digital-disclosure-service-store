@@ -132,7 +132,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         residentialTaxReduction = Some(false)
       )
       val whySet: Set[WhyAreYouMakingThisOnshoreDisclosure] = Set(WhyAreYouMakingThisOnshoreDisclosure.DidNotNotifyHasExcuse)
-      val yearsSet: Set[OnshoreYears] = Set(OnshoreYearStarting(2012))
+      val yearsSet: Set[OnshoreYears] = Set(OnshoreYearStarting(2012), PriorToThreeYears, PriorToFiveYears, PriorToNineteenYears)
       val corporationTax = Set(CorporationTaxLiability (
         periodEnd = date,
         howMuchIncome = BigInt(2000),
@@ -181,8 +181,6 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         disregardedCDF = Some(true),
         taxYearLiabilities = Some(Map("2012" -> OnshoreTaxYearWithLiabilities(OnshoreYearStarting(2012), liabilities))),
         lettingDeductions = Some(Map("2012" -> BigInt(123))),
-        incomeSource = Some(Set(IncomeOrGainSource.Dividends)),
-        otherIncomeSource = Some("Some income"),
         lettingProperties = Some(lettingProperty),
         memberOfLandlordAssociations = Some(true),
         landlordAssociations = Some("Some associations"),
@@ -224,7 +222,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         foreignTaxCredit = false
       )
       val whySet: Set[WhyAreYouMakingThisDisclosure] = Set(WhyAreYouMakingThisDisclosure.DidNotNotifyHasExcuse)
-      val yearsSet: Set[OffshoreYears] = Set(TaxYearStarting(2012))
+      val yearsSet: Set[OffshoreYears] = Set(TaxYearStarting(2012), ReasonableExcusePriorTo, CarelessPriorTo, DeliberatePriorTo)
       val interpretationSet: Set[YourLegalInterpretation] = Set(YourLegalInterpretation.AnotherIssue)
       val offshoreLiabilities = OffshoreLiabilities(
         behaviour = Some(whySet), 
@@ -241,8 +239,6 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         taxYearLiabilities = Some(Map("2012" -> TaxYearWithLiabilities(TaxYearStarting(2012), liabilities))),
         taxYearForeignTaxDeductions = Some(Map("2012" -> BigInt(123))),
         countryOfYourOffshoreLiability = None,
-        incomeSource = Some(Set(WhereDidTheUndeclaredIncomeOrGainIncluded.Dividends)),
-        otherIncomeSource = Some("Some income"),
         legalInterpretation = Some(interpretationSet),
         otherInterpretation = Some("Some interpretation"),
         notIncludedDueToInterpretation = Some(HowMuchTaxHasNotBeenIncluded.TenThousandOrLess),

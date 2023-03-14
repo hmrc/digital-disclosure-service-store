@@ -24,6 +24,7 @@ import models.address._
 import models.store.Notification
 import models.{Metadata, YesNoOrUnsure}
 import java.time.{ZoneOffset, LocalDate, LocalDateTime}
+import models.IncomeOrGainSource
 
 class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
 
@@ -204,7 +205,9 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         areYouRepresetingAnOrganisation = Some(true),
         organisationName = Some(textToEncrypt),
         offshoreLiabilities = Some(true),
-        onshoreLiabilities = Some(true)
+        onshoreLiabilities = Some(true),
+        incomeSource = Some(Set(IncomeOrGainSource.Dividends)),
+        otherIncomeSource = Some("Some source")
       )   
 
       val encryptedModel = sut.encryptBackground(model, associatedText, secretKey)
@@ -213,6 +216,8 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.letterReferenceNumber mustEqual model.letterReferenceNumber
       encryptedModel.disclosureEntity mustEqual model.disclosureEntity
       encryptedModel.areYouRepresetingAnOrganisation mustEqual model.areYouRepresetingAnOrganisation
+      encryptedModel.offshoreLiabilities mustEqual model.offshoreLiabilities
+      encryptedModel.onshoreLiabilities mustEqual model.onshoreLiabilities
       encryptedModel.offshoreLiabilities mustEqual model.offshoreLiabilities
       encryptedModel.onshoreLiabilities mustEqual model.onshoreLiabilities
 

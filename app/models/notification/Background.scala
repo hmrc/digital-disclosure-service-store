@@ -18,6 +18,7 @@ package models.notification
 
 import play.api.libs.json.{Json, OFormat}
 import crypto.EncryptedValue
+import models.IncomeOrGainSource
 
 final case class Background (
   haveYouReceivedALetter: Option[Boolean] = None,
@@ -26,7 +27,9 @@ final case class Background (
   areYouRepresetingAnOrganisation: Option[Boolean] = None,
   organisationName: Option[String] = None,
   offshoreLiabilities: Option[Boolean] = None,
-  onshoreLiabilities: Option[Boolean] = None  
+  onshoreLiabilities: Option[Boolean] = None,  
+  incomeSource: Option[Set[IncomeOrGainSource]] = None,
+  otherIncomeSource: Option[String] = None
 )
 
 object Background {
@@ -40,7 +43,9 @@ final case class EncryptedBackground (
   areYouRepresetingAnOrganisation: Option[Boolean] = None,
   organisationName: Option[EncryptedValue] = None,
   offshoreLiabilities: Option[Boolean] = None,
-  onshoreLiabilities: Option[Boolean] = None  
+  onshoreLiabilities: Option[Boolean] = None,  
+  incomeSource: Option[Set[IncomeOrGainSource]] = None,
+  otherIncomeSource: Option[String] = None  
 )
 
 object EncryptedBackground {
