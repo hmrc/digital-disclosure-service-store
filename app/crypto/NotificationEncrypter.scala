@@ -106,7 +106,9 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
       areYouRepresetingAnOrganisation = background.areYouRepresetingAnOrganisation,
       organisationName = background.organisationName.map(e),
       offshoreLiabilities = background.offshoreLiabilities,
-      onshoreLiabilities = background.onshoreLiabilities 
+      onshoreLiabilities = background.onshoreLiabilities,
+      incomeSource = background.incomeSource,
+      otherIncomeSource = background.otherIncomeSource 
     )
   } 
 
@@ -124,7 +126,9 @@ class NotificationEncrypter @Inject()(crypto: SecureGCMCipher) {
       areYouRepresetingAnOrganisation = background.areYouRepresetingAnOrganisation,
       organisationName = background.organisationName.map(d),
       offshoreLiabilities = background.offshoreLiabilities,
-      onshoreLiabilities = background.onshoreLiabilities 
+      onshoreLiabilities = background.onshoreLiabilities,
+      incomeSource = background.incomeSource,
+      otherIncomeSource = background.otherIncomeSource  
     )
   }
 
