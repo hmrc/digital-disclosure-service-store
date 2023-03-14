@@ -132,7 +132,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         residentialTaxReduction = Some(false)
       )
       val whySet: Set[WhyAreYouMakingThisOnshoreDisclosure] = Set(WhyAreYouMakingThisOnshoreDisclosure.DidNotNotifyHasExcuse)
-      val yearsSet: Set[OnshoreYears] = Set(OnshoreYearStarting(2012))
+      val yearsSet: Set[OnshoreYears] = Set(OnshoreYearStarting(2012), PriorToThreeYears, PriorToFiveYears, PriorToNineteenYears)
       val corporationTax = Set(CorporationTaxLiability (
         periodEnd = date,
         howMuchIncome = BigInt(2000),
@@ -222,7 +222,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         foreignTaxCredit = false
       )
       val whySet: Set[WhyAreYouMakingThisDisclosure] = Set(WhyAreYouMakingThisDisclosure.DidNotNotifyHasExcuse)
-      val yearsSet: Set[OffshoreYears] = Set(TaxYearStarting(2012))
+      val yearsSet: Set[OffshoreYears] = Set(TaxYearStarting(2012), ReasonableExcusePriorTo, CarelessPriorTo, DeliberatePriorTo)
       val interpretationSet: Set[YourLegalInterpretation] = Set(YourLegalInterpretation.AnotherIssue)
       val offshoreLiabilities = OffshoreLiabilities(
         behaviour = Some(whySet), 
