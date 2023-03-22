@@ -28,14 +28,14 @@ sealed trait EncryptedSubmission {
 }
 
 object EncryptedSubmission {
-  implicit val format: OFormat[EncryptedSubmission] = Json.format[EncryptedSubmission]
+  implicit val format: OFormat[EncryptedSubmission] = Json.using[Json.WithDefaultValues].format[EncryptedSubmission]
 }
 
 final case class EncryptedNotification (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
-  created: Instant,
+  created: Instant = Instant.now(),
   metadata: Metadata,
   personalDetails: EncryptedPersonalDetails,
   customerId: Option[CustomerId] = None,
@@ -43,14 +43,14 @@ final case class EncryptedNotification (
 ) extends EncryptedSubmission
 
 object EncryptedNotification {
-  implicit val format: OFormat[EncryptedNotification] = Json.format[EncryptedNotification]
+  implicit val format: OFormat[EncryptedNotification] = Json.using[Json.WithDefaultValues].format[EncryptedNotification]
 }
 
 final case class EncryptedFullDisclosure (
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
-  created: Instant,
+  created: Instant = Instant.now(),
   metadata: Metadata,
   caseReference: EncryptedCaseReference,
   personalDetails: EncryptedPersonalDetails,
@@ -63,5 +63,5 @@ final case class EncryptedFullDisclosure (
 ) extends EncryptedSubmission
 
 object EncryptedFullDisclosure {
-  implicit val format: OFormat[EncryptedFullDisclosure] = Json.format[EncryptedFullDisclosure]
+  implicit val format: OFormat[EncryptedFullDisclosure] = Json.using[Json.WithDefaultValues].format[EncryptedFullDisclosure]
 }
