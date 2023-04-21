@@ -34,8 +34,11 @@ object AreYouTheEntity {
     case JsString("friend") => JsSuccess(IAmAFriend)
     case JsString("voluntaryOrganisation") => JsSuccess(VoluntaryOrganisation)
     case JsString("powerOfAttorney") => JsSuccess(PowerOfAttorney)
-    case JsString("true") => JsSuccess(YesIAm)
-    case JsString("false") => JsSuccess(IAmAnAccountantOrTaxAgent)
+    case value: JsValue => value.validate[Boolean] match {
+        case JsSuccess(true, _) => JsSuccess(YesIAm)
+        case JsSuccess(false, _) => JsSuccess(IAmAnAccountantOrTaxAgent)
+        case _ => JsError("error.invalid")
+      }
     case _ => JsError("error.invalid")
   }
 
