@@ -23,13 +23,13 @@ import play.api.libs.json.{JsString, JsSuccess, Json}
 class AreYouTheEntitySpec extends AnyWordSpec with Matchers  {
 
   "reads" should {
-    "convert JsString true to YesIAm" in {
-      val actual = JsString("true")
+    "convert JsValue true to YesIAm" in {
+      val actual = Json.toJson(true)
       actual.validate[AreYouTheEntity] shouldEqual JsSuccess(AreYouTheEntity.YesIAm)
     }
 
     "convert JsString false to IAmAnAccountantOrTaxAgent" in {
-      val actual = JsString("false")
+      val actual = Json.toJson(false)
       actual.validate[AreYouTheEntity] shouldEqual JsSuccess(AreYouTheEntity.IAmAnAccountantOrTaxAgent)
     }
 
