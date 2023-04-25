@@ -16,3 +16,4 @@ lazy val microservice = Project("digital-disclosure-service-store", file("."))
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
+
