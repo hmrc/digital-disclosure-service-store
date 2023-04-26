@@ -220,6 +220,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         interest = BigInt(2000),
         penaltyRate = 12,
         penaltyRateReason = "Reason",
+        undeclaredIncomeOrGain = Some("Some gain"),
         foreignTaxCredit = false
       )
       val whySet: Set[WhyAreYouMakingThisDisclosure] = Set(WhyAreYouMakingThisDisclosure.DidNotNotifyHasExcuse)
