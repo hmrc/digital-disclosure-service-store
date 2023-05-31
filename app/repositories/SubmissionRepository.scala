@@ -24,11 +24,13 @@ import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import org.mongodb.scala.bson.BsonDocument
 
 import java.time.{Clock, Instant}
 import java.util.concurrent.TimeUnit
 import com.google.inject.{Inject, ImplementedBy, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import org.bson.BsonType
 
 import crypto.SubmissionEncrypter
 
@@ -115,6 +117,19 @@ class SubmissionRepositoryImpl @Inject()(
       Filters.equal("userId", userId),
       Filters.equal("submissionId", submissionId)
     )).toFuture().map(_ => true)
+
+  def convertLastUpdatedToDate: Future[Boolean] = {
+    collection.updateMany(
+        filter = Filters.bsonType("lastUpdated", BsonType.STRING),
+        update = Seq(Updates.set("lastUpdated", BsonDocument("$toDate" -> "$lastUpdated")))
+      ).toFuture().map(_ => true)
+  }
+
+  def getNumberOfRecordsWhereLastUpdatedIsString: Future[Long] = {
+    val selector = Filters.`type`("lastUpdated", org.bson.BsonType.STRING)
+    collection.countDocuments(selector).toFuture()
+  }
+
 }
 
 @ImplementedBy(classOf[SubmissionRepositoryImpl])
@@ -123,4 +138,6 @@ trait SubmissionRepository {
   def get(userId: String, submissionId: String): Future[Option[Submission]]
   def get(userId: String): Future[Seq[Submission]]
   def clear(userId: String, submissionId: String): Future[Boolean]
+  def convertLastUpdatedToDate: Future[Boolean] 
+  def getNumberOfRecordsWhereLastUpdatedIsString: Future[Long]
 } 

@@ -18,6 +18,7 @@ package config
 
 import com.google.inject.AbstractModule
 import java.time.{Clock, ZoneOffset}
+import repositories.LastUpdatedUpdate
 
 class Module extends AbstractModule {
 
@@ -25,5 +26,6 @@ class Module extends AbstractModule {
 
     bind(classOf[AppConfig]).asEagerSingleton()
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
+    bind(classOf[LastUpdatedUpdate]).asEagerSingleton()
   }
 }
