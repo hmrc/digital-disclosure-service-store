@@ -120,9 +120,9 @@ class SubmissionRepositoryImpl @Inject()(
 
   def convertLastUpdatedToDate: Future[Boolean] = {
     collection.updateMany(
-        filter = Filters.bsonType("lastUpdated", BsonType.STRING),
-        update = Seq(Updates.set("lastUpdated", BsonDocument("$toDate" -> "$lastUpdated")))
-      ).toFuture().map(_ => true)
+      filter = Filters.bsonType("lastUpdated", BsonType.STRING),
+      update = Seq(Updates.set("lastUpdated", BsonDocument("$toDate" -> "$lastUpdated")))
+    ).toFuture().map(_ => true)
   }
 
   def getNumberOfRecordsWhereLastUpdatedIsString: Future[Long] = {
