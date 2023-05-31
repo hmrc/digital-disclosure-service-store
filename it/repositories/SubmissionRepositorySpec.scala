@@ -51,7 +51,7 @@ class SubmissionRepositorySpec extends AnyFreeSpec
     clock.set(now)
   }
 
-  override protected def repository = new SubmissionRepositoryImpl(
+  override lazy val repository = new SubmissionRepositoryImpl(
     mongoComponent = mongoComponent,
     appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key", "mongodb.timeToLiveInDays" -> 30)),
     clock = clock,
