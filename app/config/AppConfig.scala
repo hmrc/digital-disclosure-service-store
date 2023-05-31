@@ -28,4 +28,6 @@ class AppConfig @Inject()(config: Configuration) {
 
   val mongoEncryptionKey = config.get[String]("mongodb.encryption.key")
 
+  val updateRecordsOnStartUp = config.get[Boolean]("mongodb.updateLastUpdated")
+
 }
