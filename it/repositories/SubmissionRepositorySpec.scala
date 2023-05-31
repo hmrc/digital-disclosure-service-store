@@ -53,7 +53,7 @@ class SubmissionRepositorySpec extends AnyFreeSpec
 
   override lazy val repository = new SubmissionRepositoryImpl(
     mongoComponent = mongoComponent,
-    appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key", "mongodb.timeToLiveInDays" -> 30)),
+    appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key", "mongodb.timeToLiveInDays" -> 30, "mongodb.updateLastUpdated" -> false)),
     clock = clock,
     encrypter = encrypter
   )
