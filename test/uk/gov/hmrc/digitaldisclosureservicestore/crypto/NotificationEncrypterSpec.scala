@@ -16,27 +16,30 @@
 
 package crypto
 
+import config.AppConfig
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.freespec.AnyFreeSpec
-
 import models.notification._
 import models.address._
 import models.store.Notification
 import models.{Metadata, YesNoOrUnsure}
-import java.time.{ZoneOffset, LocalDate, LocalDateTime}
+
+import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 import models.IncomeOrGainSource
+import play.api.Configuration
 
 class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
 
-  private val encrypter = new SecureGCMCipherImpl
   private val secretKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
+  lazy implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
+  private val encrypter = new SecureGCMCipherImpl
   private val associatedText = "associatedText"
   private val textToEncrypt = "textNotEncrypted"
   private val dateToEncrypt = LocalDate.of(2016,1,10)
 
   val sut = new NotificationEncrypter(encrypter)
 
-  val addressToEncrypt = Address(
+  val addressToEncrypt: Address = Address(
     line1 = textToEncrypt,
     line2 = Some(textToEncrypt),
     line3 = Some(textToEncrypt),
@@ -47,7 +50,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
 
   "NotificationEncrypter" - {
     "must encrypt/decrypt an Address" in {
-      val encryptedAddress = sut.encryptAddress(addressToEncrypt, associatedText, secretKey)
+      val encryptedAddress = sut.encryptAddress(addressToEncrypt, associatedText)
 
       encryptedAddress.line1.value must not equal addressToEncrypt.line1
       encryptedAddress.line2.get.value must not equal addressToEncrypt.line2.get
@@ -56,7 +59,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedAddress.postcode.get.value must not equal addressToEncrypt.postcode.get
       encryptedAddress.country.value must not equal addressToEncrypt.country.code
 
-      sut.decryptAddress(encryptedAddress, associatedText, secretKey) mustEqual addressToEncrypt
+      sut.decryptAddress(encryptedAddress, associatedText) mustEqual addressToEncrypt
     }
   
     "must encrypt/decrypt an AboutTheEstate" in {
@@ -74,7 +77,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         address = Some(addressToEncrypt)
       )   
 
-      val encryptedAboutTheEstate = sut.encryptAboutTheEstate(aboutTheEstate, associatedText, secretKey)
+      val encryptedAboutTheEstate = sut.encryptAboutTheEstate(aboutTheEstate, associatedText)
 
       encryptedAboutTheEstate.fullName.get.value must not equal aboutTheEstate.fullName.get
       encryptedAboutTheEstate.dateOfBirth.get.value must not equal aboutTheEstate.dateOfBirth.get.toString
@@ -86,7 +89,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedAboutTheEstate.registeredForSA.get mustEqual aboutTheEstate.registeredForSA.get
       encryptedAboutTheEstate.sautr.get.value must not equal aboutTheEstate.sautr.get
 
-      sut.decryptAboutTheEstate(encryptedAboutTheEstate, associatedText, secretKey) mustEqual aboutTheEstate
+      sut.decryptAboutTheEstate(encryptedAboutTheEstate, associatedText) mustEqual aboutTheEstate
     }
 
     "must encrypt/decrypt an AboutTheLLP" in {
@@ -96,10 +99,10 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         address = Some(addressToEncrypt)
       ) 
 
-      val encryptedModel = sut.encryptAboutTheLLP(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptAboutTheLLP(model, associatedText)
 
       encryptedModel.name.get.value must not equal model.name.get
-      sut.decryptAboutTheLLP(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptAboutTheLLP(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt an AboutTheTrust" in {
@@ -109,10 +112,10 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         address = Some(addressToEncrypt)
       ) 
 
-      val encryptedModel = sut.encryptAboutTheTrust(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptAboutTheTrust(model, associatedText)
 
       encryptedModel.name.get.value must not equal model.name.get
-      sut.decryptAboutTheTrust(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptAboutTheTrust(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt an AboutTheCompany" in {
@@ -123,11 +126,11 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         address = Some(addressToEncrypt)
       ) 
 
-      val encryptedModel = sut.encryptAboutTheCompany(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptAboutTheCompany(model, associatedText)
 
       encryptedModel.name.get.value must not equal model.name.get
       encryptedModel.registrationNumber.get.value must not equal model.registrationNumber.get
-      sut.decryptAboutTheCompany(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptAboutTheCompany(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt an AboutTheIndividual" in {
@@ -145,7 +148,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         address = Some(addressToEncrypt)
       )   
 
-      val encryptedModel = sut.encryptAboutTheIndividual(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptAboutTheIndividual(model, associatedText)
 
       encryptedModel.fullName.get.value must not equal model.fullName.get
       encryptedModel.dateOfBirth.get.value must not equal model.dateOfBirth.get.toString
@@ -157,7 +160,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.registeredForSA.get mustEqual model.registeredForSA.get
       encryptedModel.sautr.get.value must not equal model.sautr.get
 
-      sut.decryptAboutTheIndividual(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptAboutTheIndividual(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt an AboutYou" in {
@@ -178,7 +181,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         address = Some(addressToEncrypt)
       )   
 
-      val encryptedModel = sut.encryptAboutYou(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptAboutYou(model, associatedText)
 
       encryptedModel.fullName.get.value must not equal model.fullName.get
       encryptedModel.telephoneNumber.get.value must not equal model.telephoneNumber.get
@@ -193,7 +196,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.registeredForSA.get mustEqual model.registeredForSA.get
       encryptedModel.sautr.get.value must not equal model.sautr.get
 
-      sut.decryptAboutYou(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptAboutYou(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a Background" in {
@@ -210,7 +213,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         otherIncomeSource = Some("Some source")
       )   
 
-      val encryptedModel = sut.encryptBackground(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptBackground(model, associatedText)
 
       encryptedModel.haveYouReceivedALetter mustEqual model.haveYouReceivedALetter
       encryptedModel.letterReferenceNumber mustEqual model.letterReferenceNumber
@@ -223,7 +226,7 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
 
       encryptedModel.organisationName.get.value must not equal model.organisationName.get
 
-      sut.decryptBackground(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptBackground(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a PersonalDetails" in {
@@ -238,8 +241,8 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         aboutTheEstate = Some(AboutTheEstate())
       )   
 
-      val encryptedModel = sut.encryptPersonalDetails(model, associatedText, secretKey)
-      sut.decryptPersonalDetails(encryptedModel, associatedText, secretKey) mustEqual model
+      val encryptedModel = sut.encryptPersonalDetails(model, associatedText)
+      sut.decryptPersonalDetails(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a Notification" in {
@@ -254,14 +257,14 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
         customerId = None
       )   
 
-      val encryptedModel = sut.encryptNotification(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptNotification(model, associatedText)
 
       encryptedModel.userId mustEqual model.userId
       encryptedModel.submissionId mustEqual model.submissionId
       encryptedModel.lastUpdated mustEqual model.lastUpdated
       encryptedModel.metadata mustEqual model.metadata
 
-      sut.decryptNotification(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptNotification(encryptedModel, associatedText) mustEqual model
     }
 
 

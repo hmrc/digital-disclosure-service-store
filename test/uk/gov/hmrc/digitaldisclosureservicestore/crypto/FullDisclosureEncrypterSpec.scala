@@ -16,19 +16,22 @@
 
 package crypto
 
+import config.AppConfig
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.freespec.AnyFreeSpec
-
 import models.disclosure._
 import models.notification._
 import models.store._
 import models._
-import java.time.{ZoneOffset, LocalDateTime, LocalDate}
+import play.api.Configuration
+
+import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 
 class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
 
-  private val encrypter = new SecureGCMCipherImpl
   private val secretKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
+  lazy implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
+  private val encrypter = new SecureGCMCipherImpl
   private val associatedText = "associatedText"
   private val textToEncrypt = "textNotEncrypted"
 
@@ -54,7 +57,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         customerId = None
       )   
 
-      val encryptedModel = sut.encryptFullDisclosure(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptFullDisclosure(model, associatedText)
 
       encryptedModel.userId mustEqual model.userId
       encryptedModel.submissionId mustEqual model.submissionId
@@ -64,7 +67,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.offshoreLiabilities mustEqual model.offshoreLiabilities
       encryptedModel.otherLiabilities mustEqual model.otherLiabilities
 
-      sut.decryptFullDisclosure(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptFullDisclosure(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a CaseReference" in {
@@ -74,12 +77,12 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         whatIsTheCaseReference = Some(textToEncrypt)
       ) 
 
-      val encryptedModel = sut.encryptCaseReference(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptCaseReference(model, associatedText)
 
       encryptedModel.doYouHaveACaseReference mustEqual model.doYouHaveACaseReference
       encryptedModel.whatIsTheCaseReference.get.value must not equal model.whatIsTheCaseReference.get
 
-      sut.decryptCaseReference(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptCaseReference(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a ReasonForDisclosingNow" in {
@@ -100,7 +103,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         telephone = Some(textToEncrypt)
       )
 
-      val encryptedModel = sut.encryptReasonForDisclosingNow(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptReasonForDisclosingNow(model, associatedText)
 
       encryptedModel.reason mustEqual model.reason
       encryptedModel.otherReason mustEqual model.otherReason
@@ -116,7 +119,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.email.get.value must not equal model.email.get
       encryptedModel.telephone.get.value must not equal model.telephone.get
 
-      sut.decryptReasonForDisclosingNow(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptReasonForDisclosingNow(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a full disclosure with onshore liabilities" in {
@@ -205,9 +208,9 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         customerId = None
       )   
 
-      val encryptedModel = sut.encryptFullDisclosure(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptFullDisclosure(model, associatedText)
       encryptedModel.onshoreLiabilities mustEqual model.onshoreLiabilities
-      sut.decryptFullDisclosure(encryptedModel, associatedText, secretKey) mustEqual model
+      sut.decryptFullDisclosure(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a full disclosure with offshore liabilities" in {
@@ -262,9 +265,9 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         customerId = None
       )   
 
-      val encryptedModel = sut.encryptFullDisclosure(model, associatedText, secretKey)
+      val encryptedModel = sut.encryptFullDisclosure(model, associatedText)
       encryptedModel.onshoreLiabilities mustEqual model.onshoreLiabilities
-      sut.decryptFullDisclosure(encryptedModel, associatedText, secretKey) mustEqual model   
+      sut.decryptFullDisclosure(encryptedModel, associatedText) mustEqual model
     }
 
   }
