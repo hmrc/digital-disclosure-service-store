@@ -26,21 +26,15 @@ class SubmissionEncrypter @Inject()(
   fullDisclosureEncrypter: FullDisclosureEncrypter
 ) {
 
-  def encryptSubmission(
-    submission: Submission,
-    sessionId: String,
-    key: String): EncryptedSubmission = 
-      submission match {
-        case notification: Notification => notificationEncrypter.encryptNotification(notification, sessionId, key)
-        case disclosure: FullDisclosure => fullDisclosureEncrypter.encryptFullDisclosure(disclosure, sessionId, key)
-      }
+  def encryptSubmission(submission: Submission, sessionId: String): EncryptedSubmission =
+    submission match {
+      case notification: Notification => notificationEncrypter.encryptNotification(notification, sessionId)
+      case disclosure: FullDisclosure => fullDisclosureEncrypter.encryptFullDisclosure(disclosure, sessionId)
+    }
 
-  def decryptSubmission(
-    submission: EncryptedSubmission,
-    sessionId: String,
-    key: String): Submission = 
-      submission match {
-        case notification: EncryptedNotification => notificationEncrypter.decryptNotification(notification, sessionId, key)
-        case disclosure: EncryptedFullDisclosure => fullDisclosureEncrypter.decryptFullDisclosure(disclosure, sessionId, key)
-      }
+  def decryptSubmission(submission: EncryptedSubmission, sessionId: String): Submission =
+    submission match {
+      case notification: EncryptedNotification => notificationEncrypter.decryptNotification(notification, sessionId)
+      case disclosure: EncryptedFullDisclosure => fullDisclosureEncrypter.decryptFullDisclosure(disclosure, sessionId)
+    }
 }

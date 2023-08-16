@@ -69,8 +69,6 @@ class SubmissionRepositoryImpl @Inject()(
     extraCodecs = Codecs.playFormatSumCodecs(EncryptedSubmission.format)
   ) with SubmissionRepository {
 
-  private val key = appConfig.mongoEncryptionKey
-
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
   def get(userId: String, submissionId: String): Future[Option[Submission]] =
@@ -79,7 +77,7 @@ class SubmissionRepositoryImpl @Inject()(
         Filters.equal("userId", userId),
         Filters.equal("submissionId", submissionId)
       ))
-      .map(encrypter.decryptSubmission(_, userId, key))
+      .map(encrypter.decryptSubmission(_, userId))
       .headOption()
         
   def get(userId: String): Future[Seq[Submission]] =
@@ -87,7 +85,7 @@ class SubmissionRepositoryImpl @Inject()(
       .find(Filters.and(
         Filters.equal("userId", userId)
       ))
-      .map(encrypter.decryptSubmission(_, userId, key))
+      .map(encrypter.decryptSubmission(_, userId))
       .toFuture()
 
   def set(submission: Submission): Future[Boolean] = {
@@ -103,7 +101,7 @@ class SubmissionRepositoryImpl @Inject()(
           Filters.equal("userId", submission.userId),
           Filters.equal("submissionId", submission.submissionId)
         ),
-        replacement = encrypter.encryptSubmission(updatedSubmission, submission.userId, key),
+        replacement = encrypter.encryptSubmission(updatedSubmission, submission.userId),
         options     = ReplaceOptions().upsert(true)
       )
       .toFuture()

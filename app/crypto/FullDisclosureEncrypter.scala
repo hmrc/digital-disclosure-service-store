@@ -27,56 +27,43 @@ class FullDisclosureEncrypter @Inject()(
   notificationEncrypter: NotificationEncrypter
 ) {
 
-  def encryptFullDisclosure(
-    fullDisclosure: FullDisclosure,
-    sessionId: String,
-    key: String): EncryptedFullDisclosure = {
-
+  def encryptFullDisclosure(fullDisclosure: FullDisclosure, sessionId: String): EncryptedFullDisclosure =
     EncryptedFullDisclosure(
       userId = fullDisclosure.userId,
       submissionId = fullDisclosure.submissionId,
       lastUpdated = fullDisclosure.lastUpdated,
       created = fullDisclosure.created,
       metadata = fullDisclosure.metadata,
-      caseReference = encryptCaseReference(fullDisclosure.caseReference, sessionId, key),
-      personalDetails = notificationEncrypter.encryptPersonalDetails(fullDisclosure.personalDetails, sessionId, key),
+      caseReference = encryptCaseReference(fullDisclosure.caseReference, sessionId),
+      personalDetails = notificationEncrypter.encryptPersonalDetails(fullDisclosure.personalDetails, sessionId),
       onshoreLiabilities = fullDisclosure.onshoreLiabilities,
       offshoreLiabilities = fullDisclosure.offshoreLiabilities,
       otherLiabilities = fullDisclosure.otherLiabilities,
-      reasonForDisclosingNow = encryptReasonForDisclosingNow(fullDisclosure.reasonForDisclosingNow, sessionId, key),
+      reasonForDisclosingNow = encryptReasonForDisclosingNow(fullDisclosure.reasonForDisclosingNow, sessionId),
       customerId = fullDisclosure.customerId,
       madeDeclaration = fullDisclosure.madeDeclaration
     )
-  } 
 
-  def decryptFullDisclosure(
-    fullDisclosure: EncryptedFullDisclosure,
-    sessionId: String,
-    key: String): FullDisclosure = {
-
+  def decryptFullDisclosure(fullDisclosure: EncryptedFullDisclosure, sessionId: String): FullDisclosure =
     FullDisclosure(
       userId = fullDisclosure.userId,
       submissionId = fullDisclosure.submissionId,
       lastUpdated = fullDisclosure.lastUpdated,
       created = fullDisclosure.created,
       metadata = fullDisclosure.metadata,
-      caseReference = decryptCaseReference(fullDisclosure.caseReference, sessionId, key),
-      personalDetails = notificationEncrypter.decryptPersonalDetails(fullDisclosure.personalDetails, sessionId, key),
+      caseReference = decryptCaseReference(fullDisclosure.caseReference, sessionId),
+      personalDetails = notificationEncrypter.decryptPersonalDetails(fullDisclosure.personalDetails, sessionId),
       onshoreLiabilities = fullDisclosure.onshoreLiabilities,
       offshoreLiabilities = fullDisclosure.offshoreLiabilities,
       otherLiabilities = fullDisclosure.otherLiabilities,
-      reasonForDisclosingNow = decryptReasonForDisclosingNow(fullDisclosure.reasonForDisclosingNow, sessionId, key),
+      reasonForDisclosingNow = decryptReasonForDisclosingNow(fullDisclosure.reasonForDisclosingNow, sessionId),
       customerId = fullDisclosure.customerId,
       madeDeclaration = fullDisclosure.madeDeclaration
     )
-  }
 
-  def encryptCaseReference(
-    caseReference: CaseReference,
-    sessionId: String,
-    key: String): EncryptedCaseReference = {
+  def encryptCaseReference(caseReference: CaseReference, sessionId: String): EncryptedCaseReference = {
 
-    def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId, key)
+    def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedCaseReference (
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
@@ -84,12 +71,9 @@ class FullDisclosureEncrypter @Inject()(
     )
   } 
 
-  def decryptCaseReference(
-    caseReference: EncryptedCaseReference,
-    sessionId: String,
-    key: String): CaseReference = {
+  def decryptCaseReference(caseReference: EncryptedCaseReference, sessionId: String): CaseReference = {
 
-    def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId, key)
+    def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     CaseReference (
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
@@ -99,10 +83,10 @@ class FullDisclosureEncrypter @Inject()(
 
   def encryptReasonForDisclosingNow(
     reasonForDisclosingNow: ReasonForDisclosingNow,
-    sessionId: String,
-    key: String): EncryptedReasonForDisclosingNow = {
+    sessionId: String
+  ): EncryptedReasonForDisclosingNow = {
 
-    def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId, key)
+    def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedReasonForDisclosingNow(
       reason = reasonForDisclosingNow.reason,
@@ -123,10 +107,10 @@ class FullDisclosureEncrypter @Inject()(
 
   def decryptReasonForDisclosingNow(
     reasonForDisclosingNow: EncryptedReasonForDisclosingNow,
-    sessionId: String,
-    key: String): ReasonForDisclosingNow = {
+    sessionId: String
+  ): ReasonForDisclosingNow = {
 
-    def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId, key)
+    def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     ReasonForDisclosingNow(
       reason = reasonForDisclosingNow.reason,
@@ -144,5 +128,4 @@ class FullDisclosureEncrypter @Inject()(
       telephone = reasonForDisclosingNow.telephone.map(d)
     )
   }
-
 }

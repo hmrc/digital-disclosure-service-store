@@ -19,15 +19,13 @@ package config
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 
-@Singleton
-class AppConfig @Inject()(config: Configuration) {
+import scala.util.Try
 
-  val appName: String = config.get[String]("appName")
+@Singleton
+class AppConfig @Inject()(val config: Configuration) {
 
   lazy val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInDays")
 
-  val mongoEncryptionKey = config.get[String]("mongodb.encryption.key")
-
-  val updateRecordsOnStartUp = config.get[Boolean]("mongodb.updateLastUpdated")
-
+  val mongoEncryptionKey: String = config.get[String]("mongodb.encryption.key")
+  val previousMongoEncryptionKey: Option[String] = Try(config.get[String]("mongodb.encryption.previousKey")).toOption
 }

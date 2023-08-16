@@ -16,103 +16,115 @@
 
 package crypto
 
+import config.AppConfig
+
 import java.security.InvalidAlgorithmParameterException
 import java.util.Base64
-
 import javax.crypto.{Cipher, IllegalBlockSizeException, KeyGenerator, NoSuchPaddingException}
 import javax.crypto.spec.GCMParameterSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.freespec.AnyFreeSpec
+import play.api.Configuration
 
 class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
 
-  private val encrypter = new SecureGCMCipherImpl
-  private val secretKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
-  private val secretKey2 = "cXo7u0HuJK8B/52xLwW7eQ=="
+  private val secretKey = "zjWYSlNW79BKWTONyGFQsT7buBcWiiOkx8blzp6LNVw="
+  private val previousKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
   private val textToEncrypt = "textNotEncrypted"
   private val associatedText = "associatedText"
   private val encryptedText = EncryptedValue(
-    "jOrmajkEqb7Jbo1GvK4Mhc3E7UiOfKS3RCy3O/F6myQ=",
-    "WM1yMH4KBGdXe65vl8Gzd37Ob2Bf1bFUSaMqXk78sNeorPFOSWwwhOj0Lcebm5nWRhjNgL4K2SV3GWEXyyqeIhWQ4fJIVQRHM9VjWCTyf7/1/f/ckAaMHqkF1XC8bnW9"
+    "yyOKSD/XoUFKjW5sTbV9VRLiAaT9hznKMTBcZRaTyXE=",
+    "lgKRUqUE4SELI2T9YW3Z6DC38tNRG0sgsKEwQ9HDnulzuPOl3nHV56buIhglPqZve7Q+BKrm3/61Yuo3M1rsya0Km7NF9aozNG0E+M6uHEHQANDu+J5gz3zaSNwInuvf"
   )
+
+  implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
+  private val encrypter = new SecureGCMCipherImpl
+
+  val appConfigPrevious: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> previousKey))
+  val encrypterWithPreviousKey = new SecureGCMCipherImpl()(appConfigPrevious)
 
   "encrypt" - {
 
     "must encrypt some text" in {
-      val encryptedValue = encrypter.encrypt(textToEncrypt, associatedText, secretKey)
+      val encryptedValue = encrypter.encrypt(textToEncrypt, associatedText)
       encryptedValue mustBe an[EncryptedValue]
     }
-  }
 
-  "decrypt" - {
-
-    "must decrypt text when the same associatedText, nonce and secretKey were used to encrypt it" in {
-      val decryptedText = encrypter.decrypt(encryptedText, associatedText, secretKey)
-      decryptedText mustEqual textToEncrypt
-    }
-
-    "must return an EncryptionDecryptionException if the encrypted value is different" in {
-      val invalidText = Base64.getEncoder.encodeToString("invalid value".getBytes)
-      val invalidEncryptedValue = EncryptedValue(invalidText, encryptedText.nonce)
-
-      val decryptAttempt = intercept[EncryptionDecryptionException](
-        encrypter.decrypt(invalidEncryptedValue, associatedText, secretKey)
+    "return an EncryptionDecryptionError if the algorithm is invalid" in {
+      val secureGCMEncryter = new SecureGCMCipherImpl {
+        override val ALGORITHM_TO_TRANSFORM_STRING: String = "invalid"
+      }
+      val encryptedAttempt = intercept[EncryptionDecryptionException](
+        secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
-      decryptAttempt.failureReason must include("Error occurred due to padding scheme")
+      encryptedAttempt.failureReason mustBe "Algorithm being requested is not available in this environment: AES for encrypt"
     }
 
-    "must return an EncryptionDecryptionException if the nonce is different" in {
-      val invalidNonce = Base64.getEncoder.encodeToString("invalid value".getBytes)
-      val invalidEncryptedValue = EncryptedValue(encryptedText.value, invalidNonce)
-
-      val decryptAttempt = intercept[EncryptionDecryptionException](
-        encrypter.decrypt(invalidEncryptedValue, associatedText, secretKey)
+    "return an EncryptionDecryptionError if the padding is invalid" in {
+      val secureGCMEncryter = new SecureGCMCipherImpl {
+        override def getCipherInstance: Cipher = throw new NoSuchPaddingException()
+      }
+      val encryptedAttempt = intercept[EncryptionDecryptionException](
+        secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
-      decryptAttempt.failureReason must include("Error occurred due to padding scheme")
+      encryptedAttempt.failureReason mustBe "Padding Scheme being requested is not available this environment for encrypt"
     }
 
-    "must return an EncryptionDecryptionException if the associated text is different" in {
-      val decryptAttempt = intercept[EncryptionDecryptionException](
-        encrypter.decrypt(encryptedText, "invalid associated text", secretKey)
+    "return an EncryptionDecryptionError if an InvalidAlgorithmParameterException is thrown" in {
+      val secureGCMEncryter = new SecureGCMCipherImpl {
+        override def getCipherInstance: Cipher = throw new InvalidAlgorithmParameterException()
+      }
+      val encryptedAttempt = intercept[EncryptionDecryptionException](
+        secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
-      decryptAttempt.failureReason must include("Error occurred due to padding scheme")
+      encryptedAttempt.failureReason mustBe "Algorithm parameters being specified are not valid for encrypt"
     }
 
-    "must return an EncryptionDecryptionException if the secret key is different" in {
-      val decryptAttempt = intercept[EncryptionDecryptionException](
-        encrypter.decrypt(encryptedText, associatedText, secretKey2)
+    "return an EncryptionDecryptionError if a IllegalStateException is thrown" in {
+      val secureGCMEncryter = new SecureGCMCipherImpl {
+        override def getCipherInstance: Cipher = throw new IllegalStateException()
+      }
+      val encryptedAttempt = intercept[EncryptionDecryptionException](
+        secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
-      decryptAttempt.failureReason must include("Error occurred due to padding scheme")
+      encryptedAttempt.failureReason mustBe "Cipher is in an illegal state for encrypt"
     }
 
-    "must return an EncryptionDecryptionException if the associated text is empty" in {
-      val decryptAttempt = intercept[EncryptionDecryptionException](
-        encrypter.decrypt(encryptedText, "", secretKey)
+    "return an EncryptionDecryptionError if a UnsupportedOperationException is thrown" in {
+      val secureGCMEncryter = new SecureGCMCipherImpl {
+        override def getCipherInstance: Cipher = throw new UnsupportedOperationException()
+      }
+      val encryptedAttempt = intercept[EncryptionDecryptionException](
+        secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
-      decryptAttempt.failureReason must include("associated text must not be null")
+      encryptedAttempt.failureReason mustBe "Provider might not be supporting this method for encrypt"
     }
 
-    "must return an EncryptionDecryptionException if the key is empty" in {
-      val decryptAttempt = intercept[EncryptionDecryptionException](
-        encrypter.decrypt(encryptedText, associatedText, "")
+    "return an EncryptionDecryptionError if a IllegalBlockSizeException is thrown" in {
+      val secureGCMEncryter = new SecureGCMCipherImpl {
+        override def getCipherInstance: Cipher = throw new IllegalBlockSizeException()
+      }
+      val encryptedAttempt = intercept[EncryptionDecryptionException](
+        secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
-      decryptAttempt.failureReason must include("The key provided is invalid")
+      encryptedAttempt.failureReason mustBe "Error occurred due to block size for encrypt"
     }
 
-    "must return an EncryptionDecryptionException if the key is invalid" in {
-      val decryptAttempt = intercept[EncryptionDecryptionException](
-        encrypter.decrypt(encryptedText, associatedText, "invalidKey")
+    "return an EncryptionDecryptionError if a RuntimeException is thrown" in {
+      val secureGCMEncryter = new SecureGCMCipherImpl {
+        override def getCipherInstance: Cipher = throw new RuntimeException()
+      }
+      val encryptedAttempt = intercept[EncryptionDecryptionException](
+        secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
-      decryptAttempt.failureReason must include(
-        "Key being used is not valid." +
-          " It could be due to invalid encoding, wrong length or uninitialized")
+      encryptedAttempt.failureReason mustBe "Unexpected exception for encrypt"
     }
 
     "return an EncryptionDecryptionError if the secret key is an invalid type" in {
@@ -130,86 +142,76 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
           key)
       )
 
-      encryptedAttempt.failureReason must include(
-        "Key being used is not valid." +
-          " It could be due to invalid encoding, wrong length or uninitialized")
+      encryptedAttempt.failureReason mustBe "Key being used is not valid. " +
+        "It could be due to invalid encoding, wrong length or uninitialized for encrypt"
+    }
+  }
+
+  "decrypt" - {
+
+    "must decrypt text when the same associatedText, nonce and secretKey were used to encrypt it" in {
+      val decryptedText = encrypter.decrypt(encryptedText, associatedText)
+      decryptedText mustEqual textToEncrypt
     }
 
-    "return an EncryptionDecryptionError if the algorithm is invalid" in {
-      val secureGCMEncryter = new SecureGCMCipherImpl {
-        override val ALGORITHM_TO_TRANSFORM_STRING: String = "invalid"
-      }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
-        secureGCMEncryter.encrypt(textToEncrypt, associatedText, secretKey)
-      )
+    "must decrypt text when a previous key listed in config was used to encrypt it" in {
+      lazy val appConfWithBoth: AppConfig = new AppConfig(Configuration(
+        "mongodb.encryption.key" -> secretKey,
+        "mongodb.encryption.previousKey" -> previousKey
+      ))
+      val encrypterWithBothKeys = new SecureGCMCipherImpl()(appConfWithBoth)
 
-      encryptedAttempt.failureReason must include("Algorithm being requested is not available in this environment")
+      val previouslyEncryptedValue = encrypterWithPreviousKey.encrypt(textToEncrypt, associatedText)
+      val decryptedText = encrypterWithBothKeys.decrypt(previouslyEncryptedValue, associatedText)
+      decryptedText mustEqual textToEncrypt
     }
 
-    "return an EncryptionDecryptionError if the padding is invalid" in {
-      val secureGCMEncryter = new SecureGCMCipherImpl {
-        override def getCipherInstance: Cipher = throw new NoSuchPaddingException()
-      }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
-        secureGCMEncryter.encrypt(textToEncrypt, associatedText, secretKey)
+    "must return an EncryptionDecryptionException if the value was encrypted by a key no longer listed in config" in {
+      val previouslyEncryptedValue = encrypterWithPreviousKey.encrypt(textToEncrypt, associatedText)
+
+      val decryptAttempt = intercept[EncryptionDecryptionException](
+        encrypter.decrypt(previouslyEncryptedValue, associatedText)
       )
 
-      encryptedAttempt.failureReason must include("Padding Scheme being requested is not available this environment")
+      decryptAttempt.failureReason mustBe "Error occurred due to padding scheme for decrypt"
     }
 
-    "return an EncryptionDecryptionError if an InvalidAlgorithmParameterException is thrown" in {
-      val secureGCMEncryter = new SecureGCMCipherImpl {
-        override def getCipherInstance: Cipher = throw new InvalidAlgorithmParameterException()
-      }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
-        secureGCMEncryter.encrypt(textToEncrypt, associatedText, secretKey)
+    "must return an EncryptionDecryptionException if the encrypted value is different" in {
+      val invalidText = Base64.getEncoder.encodeToString("invalid value".getBytes)
+      val invalidEncryptedValue = EncryptedValue(invalidText, encryptedText.nonce)
+
+      val decryptAttempt = intercept[EncryptionDecryptionException](
+        encrypter.decrypt(invalidEncryptedValue, associatedText)
       )
 
-      encryptedAttempt.failureReason must include("Algorithm parameters being specified are not valid")
+      decryptAttempt.failureReason mustBe "Error occurred due to padding scheme for decrypt"
     }
 
-    "return an EncryptionDecryptionError if a IllegalStateException is thrown" in {
-      val secureGCMEncryter = new SecureGCMCipherImpl {
-        override def getCipherInstance: Cipher = throw new IllegalStateException()
-      }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
-        secureGCMEncryter.encrypt(textToEncrypt, associatedText, secretKey)
+    "must return an EncryptionDecryptionException if the nonce is different" in {
+      val invalidNonce = Base64.getEncoder.encodeToString("invalid value".getBytes)
+      val invalidEncryptedValue = EncryptedValue(encryptedText.value, invalidNonce)
+
+      val decryptAttempt = intercept[EncryptionDecryptionException](
+        encrypter.decrypt(invalidEncryptedValue, associatedText)
       )
 
-      encryptedAttempt.failureReason must include("Cipher is in an illegal state")
+      decryptAttempt.failureReason mustBe "Error occurred due to padding scheme for decrypt"
     }
 
-    "return an EncryptionDecryptionError if a UnsupportedOperationException is thrown" in {
-      val secureGCMEncryter = new SecureGCMCipherImpl {
-        override def getCipherInstance: Cipher = throw new UnsupportedOperationException()
-      }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
-        secureGCMEncryter.encrypt(textToEncrypt, associatedText, secretKey)
+    "must return an EncryptionDecryptionException if the associated text is different" in {
+      val decryptAttempt = intercept[EncryptionDecryptionException](
+        encrypter.decrypt(encryptedText, "invalid associated text")
       )
 
-      encryptedAttempt.failureReason must include("Provider might not be supporting this method")
+      decryptAttempt.failureReason mustBe "Error occurred due to padding scheme for decrypt"
     }
 
-    "return an EncryptionDecryptionError if a IllegalBlockSizeException is thrown" in {
-      val secureGCMEncryter = new SecureGCMCipherImpl {
-        override def getCipherInstance: Cipher = throw new IllegalBlockSizeException()
-      }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
-        secureGCMEncryter.encrypt(textToEncrypt, associatedText, secretKey)
+    "must return an EncryptionDecryptionException if the associated text is empty" in {
+      val decryptAttempt = intercept[EncryptionDecryptionException](
+        encrypter.decrypt(encryptedText, "")
       )
 
-      encryptedAttempt.failureReason must include("Error occurred due to block size")
-    }
-
-    "return an EncryptionDecryptionError if a RuntimeException is thrown" in {
-      val secureGCMEncryter = new SecureGCMCipherImpl {
-        override def getCipherInstance: Cipher = throw new RuntimeException()
-      }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
-        secureGCMEncryter.encrypt(textToEncrypt, associatedText, secretKey)
-      )
-
-      encryptedAttempt.failureReason must include("Unexpected exception")
+      decryptAttempt.failureReason mustBe "associated text must not be null for decrypt"
     }
   }
 }
