@@ -1,5 +1,15 @@
 import uk.gov.hmrc.DefaultBuildSettings.{integrationTestSettings, targetJvm}
 
+lazy val scoverageSettings = {
+  import scoverage.ScoverageKeys
+  Seq(
+    ScoverageKeys.coverageMinimumStmtTotal := 90,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true,
+    Test / parallelExecution := false
+  )
+}
+
 lazy val microservice = Project("digital-disclosure-service-store", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
@@ -15,6 +25,7 @@ lazy val microservice = Project("digital-disclosure-service-store", file("."))
     scalacOptions += "-Wconf:src=routes/.*:s",
     PlayKeys.playDefaultPort := 15005
   )
+  .settings(scoverageSettings : _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
