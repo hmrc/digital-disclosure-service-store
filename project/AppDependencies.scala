@@ -1,20 +1,21 @@
-import sbt.*
+import sbt._
 
 object AppDependencies {
 
-  private val bootstrapVersion = "7.21.0"
-  private val hmrcMongoVersion = "1.3.0"
+  private val playVersion = "play-30"
+  private val bootstrapVersion = "8.4.0"
+  private val hmrcMongoVersion = "1.7.0"
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-backend-play-28"       % bootstrapVersion,
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"              % hmrcMongoVersion,
-    "org.scala-lang.modules"  %% "scala-xml"                       % "1.3.0",
-    "uk.gov.hmrc"             %% "internal-auth-client-play-28"    % "1.6.0"
+    "uk.gov.hmrc"            %% s"bootstrap-backend-$playVersion"    % bootstrapVersion,
+    "uk.gov.hmrc.mongo"      %% s"hmrc-mongo-$playVersion"           % hmrcMongoVersion,
+//    "org.scala-lang.modules" %% "scala-xml"                          % "2.2.0",
+    "uk.gov.hmrc"            %% s"internal-auth-client-$playVersion" % "1.8.0"
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-28"     % bootstrapVersion            % "test, it",
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"    % hmrcMongoVersion            % "test, it",
-    "org.scalatestplus"       %% "mockito-3-4"                % "3.2.10.0"                  % "test, it"
-  )
+    "uk.gov.hmrc"       %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
+    "uk.gov.hmrc.mongo" %% s"hmrc-mongo-test-$playVersion" % hmrcMongoVersion,
+    "org.scalatestplus" %% "mockito-3-4"                   % "3.2.10.0"
+  ).map(_ % "test, it")
 }

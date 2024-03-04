@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ object YesNoOrUnsure {
     case _ => JsError("error.invalid")
   }
 
-  implicit val writes = Writes[YesNoOrUnsure] {
+  implicit val writes: Writes[YesNoOrUnsure] = Writes[YesNoOrUnsure] {
     case Yes => Json.toJson("Yes")
     case No => Json.toJson("No")
     case Unsure => Json.toJson("Unsure")

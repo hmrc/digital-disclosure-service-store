@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ object Preference {
     case _ => JsError("error.invalid")
   }
 
-  implicit val writes = Writes[Preference] {
+  implicit val writes: Writes[Preference] = Writes[Preference] {
     case Email => Json.toJson("Email")
     case Telephone => Json.toJson("Telephone")
   }

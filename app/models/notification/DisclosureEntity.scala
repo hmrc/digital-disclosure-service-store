@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ object Entity {
     case _ => JsError("error.invalid")
   }
 
-  implicit val writes = Writes[Entity] {
+  implicit val writes: Writes[Entity] = Writes[Entity] {
     case Individual => Json.toJson("Individual")
     case Estate => Json.toJson("Estate")
     case Company => Json.toJson("Company")
