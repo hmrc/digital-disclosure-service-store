@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ object AreYouTheEntity {
     case _ => JsError("error.invalid")
   }
 
-  implicit val writes = Writes[AreYouTheEntity](value => JsString(value.toString))
+  implicit val writes: Writes[AreYouTheEntity] = Writes[AreYouTheEntity](value => JsString(value.toString))
 
   implicit val format: Format[AreYouTheEntity] = Format(reads, writes)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,6 @@ import play.api.libs.json._
 case class AdviceGiven(adviceGiven: String, monthYear: MonthYear, contactPreference: AdviceContactPreference)
 
 object AdviceGiven {
-  implicit val format = Json.format[AdviceGiven]
+  implicit val format: OFormat[AdviceGiven] = Json.format[AdviceGiven]
 }
 

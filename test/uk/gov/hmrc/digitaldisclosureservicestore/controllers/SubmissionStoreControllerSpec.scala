@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.test.Helpers._
-import play.api.test.{FakeRequest, Helpers, FakeHeaders}
+import play.api.test.{FakeHeaders, FakeRequest, Helpers}
 import org.mockito.Mockito.when
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+
 import java.time.{LocalDateTime, ZoneOffset}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,6 +33,7 @@ import play.api.libs.json.Json
 import models.notification._
 import models.store.{Notification, Submission}
 import models.Metadata
+import play.api.mvc.ControllerComponents
 import repositories.SubmissionRepository
 import uk.gov.hmrc.internalauth.client._
 import uk.gov.hmrc.internalauth.client.test.{BackendAuthComponentsStub, StubBehaviour}
@@ -43,7 +45,7 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
     Mockito.reset(mockSubmissionRepository)
   }
 
-  implicit val cc = Helpers.stubControllerComponents()
+  implicit val cc: ControllerComponents = Helpers.stubControllerComponents()
   val mockSubmissionRepository = mock[SubmissionRepository]  
   val mockStubBehaviour = mock[StubBehaviour]
   val expectedPredicate = Predicate.Permission(Resource(ResourceType("digital-disclosure-service-store"), ResourceLocation("notification")), IAAction("WRITE"))

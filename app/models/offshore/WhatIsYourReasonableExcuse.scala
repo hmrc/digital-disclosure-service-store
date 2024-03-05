@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,5 +21,5 @@ import play.api.libs.json._
 case class WhatIsYourReasonableExcuse (excuse: String, years: String)
 
 object WhatIsYourReasonableExcuse {
-  implicit val format = Json.format[WhatIsYourReasonableExcuse]
+  implicit val format: OFormat[WhatIsYourReasonableExcuse] = Json.format[WhatIsYourReasonableExcuse]
 }

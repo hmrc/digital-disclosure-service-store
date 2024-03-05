@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 package controllers
 
-import akka.actor.ActorSystem
-import akka.stream.testkit.NoMaterializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.testkit.NoMaterializer
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.test.Helpers._
 
@@ -28,8 +29,8 @@ import play.api.test.Helpers._
   */
 trait MaterializerSpec extends BeforeAndAfterAll { this: Suite =>
 
-  implicit lazy val actorSystem = ActorSystem()
-  implicit lazy val materializer = NoMaterializer
+  implicit lazy val actorSystem: ActorSystem = ActorSystem()
+  implicit lazy val materializer: Materializer = NoMaterializer
 
   override protected def afterAll(): Unit = {
     super.afterAll()
