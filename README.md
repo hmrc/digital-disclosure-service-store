@@ -22,7 +22,7 @@ In order to test the functionality of this service, we need to start the followi
 - Digital Disclosure Service
 
 The easiest way to set up required microservices is to use Service Manager and the DDS_ALL profile from service-manager-config repository:
-`sm --start DDS_ALL`
+`sm2 --start DDS_ALL`
 
 ## Testing the application
 This repository contains unit tests for the service. In order to run them, simply execute:
