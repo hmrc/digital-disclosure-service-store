@@ -20,7 +20,7 @@ import java.time.Instant
 import models.notification._
 import models.disclosure._
 import play.api.libs.json.{Json, OFormat}
-import models.{Metadata, CustomerId}
+import models.{CustomerId, Metadata}
 
 sealed trait Submission {
   def userId: String
@@ -33,7 +33,7 @@ object Submission {
   implicit val format: OFormat[Submission] = Json.using[Json.WithDefaultValues].format[Submission]
 }
 
-final case class Notification (
+final case class Notification(
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
@@ -48,7 +48,7 @@ object Notification {
   implicit val format: OFormat[Notification] = Json.using[Json.WithDefaultValues].format[Notification]
 }
 
-final case class FullDisclosure (
+final case class FullDisclosure(
   userId: String,
   submissionId: String,
   lastUpdated: Instant,

@@ -44,7 +44,7 @@ trait SecureGCMCipher {
   def decrypt(valueToDecrypt: EncryptedValue, associatedText: String): String
 }
 
-class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends SecureGCMCipher {
+class SecureGCMCipherImpl @Inject() (implicit appConfig: AppConfig) extends SecureGCMCipher {
 
   val IV_SIZE                       = 96
   val TAG_BIT_LENGTH                = 128
@@ -54,7 +54,7 @@ class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends Secur
   val METHOD_ENCRYPT                = "encrypt"
   val METHOD_DECRYPT                = "decrypt"
 
-  val encryptionKey: String = appConfig.mongoEncryptionKey
+  val encryptionKey: String                 = appConfig.mongoEncryptionKey
   val previousEncryptionKey: Option[String] = appConfig.previousMongoEncryptionKey
 
   def encrypt(valueToEncrypt: String, associatedText: String): EncryptedValue = {
@@ -63,7 +63,7 @@ class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends Secur
     val nonce                = new String(Base64.getEncoder.encode(initialisationVector))
     val gcmParameterSpec     = new GCMParameterSpec(TAG_BIT_LENGTH, initialisationVector)
     val secretKey            = validateSecretKey(encryptionKey, METHOD_ENCRYPT)
-    val cipherText = generateCipherText(
+    val cipherText           = generateCipherText(
       valueToEncrypt,
       validateAssociatedText(associatedText, METHOD_ENCRYPT),
       gcmParameterSpec,
@@ -118,10 +118,12 @@ class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends Secur
       case Failure(ex)              => throw processCipherTextFailure(ex, METHOD_ENCRYPT)
     }
 
-  private def decryptResult(valueToDecrypt: String,
-                            associatedText: Array[Byte],
-                            gcmParameterSpec: GCMParameterSpec,
-                            secretKey: SecretKey) = Try {
+  private def decryptResult(
+    valueToDecrypt: String,
+    associatedText: Array[Byte],
+    gcmParameterSpec: GCMParameterSpec,
+    secretKey: SecretKey
+  ) = Try {
     val cipher = getCipherInstance
     cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmParameterSpec, new SecureRandom())
     cipher.updateAAD(associatedText)
@@ -136,15 +138,15 @@ class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends Secur
   ): String = {
     val result = decryptResult(valueToDecrypt, associatedText, gcmParameterSpec, secretKey)
     (result, previousEncryptionKey) match {
-      case (Success(value), _) => new String(value)
+      case (Success(value), _)      => new String(value)
       case (Failure(_), Some(prev)) =>
         val previousKey = validateSecretKey(prev, METHOD_DECRYPT)
-        val prevResult = decryptResult(valueToDecrypt, associatedText, gcmParameterSpec, previousKey)
+        val prevResult  = decryptResult(valueToDecrypt, associatedText, gcmParameterSpec, previousKey)
         prevResult match {
           case Success(value) => new String(value)
-          case Failure(ex) => throw processCipherTextFailure(ex, METHOD_DECRYPT)
+          case Failure(ex)    => throw processCipherTextFailure(ex, METHOD_DECRYPT)
         }
-      case (Failure(ex), None) => throw processCipherTextFailure(ex, METHOD_DECRYPT)
+      case (Failure(ex), None)      => throw processCipherTextFailure(ex, METHOD_DECRYPT)
     }
   }
 
@@ -153,7 +155,7 @@ class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends Secur
   private def validateAssociatedText(associatedText: String, method: String): Array[Byte] =
     associatedText match {
       case text if text.nonEmpty => text.getBytes
-      case _ =>
+      case _                     =>
         throw new EncryptionDecryptionException(
           method,
           "associated text must not be null",
@@ -162,19 +164,19 @@ class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends Secur
     }
 
   private def processCipherTextFailure(ex: Throwable, method: String): Throwable = ex match {
-    case e: NoSuchAlgorithmException =>
+    case e: NoSuchAlgorithmException           =>
       throw new EncryptionDecryptionException(
         method,
         s"Algorithm being requested is not available in this environment: $ALGORITHM_KEY",
         e.getMessage
       )
-    case e: NoSuchPaddingException =>
+    case e: NoSuchPaddingException             =>
       throw new EncryptionDecryptionException(
         method,
         "Padding Scheme being requested is not available this environment",
         e.getMessage
       )
-    case e: InvalidKeyException =>
+    case e: InvalidKeyException                =>
       throw new EncryptionDecryptionException(
         method,
         "Key being used is not valid." +
@@ -187,14 +189,14 @@ class SecureGCMCipherImpl @Inject()(implicit appConfig: AppConfig) extends Secur
         "Algorithm parameters being specified are not valid",
         e.getMessage
       )
-    case e: IllegalStateException =>
+    case e: IllegalStateException              =>
       throw new EncryptionDecryptionException(method, "Cipher is in an illegal state", e.getMessage)
-    case e: UnsupportedOperationException =>
+    case e: UnsupportedOperationException      =>
       throw new EncryptionDecryptionException(method, "Provider might not be supporting this method", e.getMessage)
-    case e: IllegalBlockSizeException =>
+    case e: IllegalBlockSizeException          =>
       throw new EncryptionDecryptionException(method, "Error occurred due to block size", e.getMessage)
-    case e: BadPaddingException =>
+    case e: BadPaddingException                =>
       throw new EncryptionDecryptionException(method, "Error occurred due to padding scheme", e.getMessage)
-    case _ => throw new EncryptionDecryptionException(method, "Unexpected exception", ex.getMessage)
+    case _                                     => throw new EncryptionDecryptionException(method, "Unexpected exception", ex.getMessage)
   }
 }

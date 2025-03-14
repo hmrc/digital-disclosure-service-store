@@ -18,7 +18,7 @@ package models.offshore
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class CountryOfYourOffshoreLiability(alpha3:String, name:String)
+final case class CountryOfYourOffshoreLiability(alpha3: String, name: String)
 
 object CountryOfYourOffshoreLiability {
   implicit val format: OFormat[CountryOfYourOffshoreLiability] = Json.format[CountryOfYourOffshoreLiability]

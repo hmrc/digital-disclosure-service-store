@@ -26,13 +26,13 @@ final case class PersonalDetails(
   aboutTheTrust: Option[AboutTheTrust] = None,
   aboutTheLLP: Option[AboutTheLLP] = None,
   aboutTheEstate: Option[AboutTheEstate] = None
-) 
+)
 
 object PersonalDetails {
   implicit val format: OFormat[PersonalDetails] = Json.format[PersonalDetails]
 }
 
-final case class EncryptedPersonalDetails (
+final case class EncryptedPersonalDetails(
   background: EncryptedBackground,
   aboutYou: EncryptedAboutYou,
   aboutTheIndividual: Option[EncryptedAboutTheIndividual] = None,

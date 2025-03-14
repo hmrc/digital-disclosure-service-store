@@ -39,7 +39,7 @@ final case class OffshoreLiabilities(
   otherInterpretation: Option[String] = None,
   notIncludedDueToInterpretation: Option[HowMuchTaxHasNotBeenIncluded] = None,
   maximumValueOfAssets: Option[TheMaximumValueOfAllAssets] = None
-) 
+)
 
 object OffshoreLiabilities {
   implicit val format: OFormat[OffshoreLiabilities] = Json.format[OffshoreLiabilities]

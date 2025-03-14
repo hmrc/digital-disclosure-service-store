@@ -23,40 +23,40 @@ import models.address.Address
 import crypto.EncryptedValue
 import models.address.EncryptedAddress
 
-final case class AboutYou (
-    fullName: Option[String] = None,
-    telephoneNumber: Option[String] = None,
-    emailAddress: Option[String] = None,
-    dateOfBirth: Option[LocalDate] = None,
-    mainOccupation: Option[String] = None,
-    contactPreference: Option[ContactPreferences] = None,
-    doYouHaveANino: Option[YesNoOrUnsure] = None,
-    nino: Option[String] = None,
-    registeredForVAT: Option[YesNoOrUnsure] = None,
-    vatRegNumber: Option[String] = None,
-    registeredForSA: Option[YesNoOrUnsure] = None,
-    sautr: Option[String] = None,
-    address: Option[Address] = None
+final case class AboutYou(
+  fullName: Option[String] = None,
+  telephoneNumber: Option[String] = None,
+  emailAddress: Option[String] = None,
+  dateOfBirth: Option[LocalDate] = None,
+  mainOccupation: Option[String] = None,
+  contactPreference: Option[ContactPreferences] = None,
+  doYouHaveANino: Option[YesNoOrUnsure] = None,
+  nino: Option[String] = None,
+  registeredForVAT: Option[YesNoOrUnsure] = None,
+  vatRegNumber: Option[String] = None,
+  registeredForSA: Option[YesNoOrUnsure] = None,
+  sautr: Option[String] = None,
+  address: Option[Address] = None
 )
 
 object AboutYou {
   implicit val format: OFormat[AboutYou] = Json.format[AboutYou]
 }
 
-final case class EncryptedAboutYou (
-     fullName: Option[EncryptedValue] = None,
-     telephoneNumber: Option[EncryptedValue] = None,
-     emailAddress: Option[EncryptedValue] = None,
-     dateOfBirth: Option[EncryptedValue] = None,
-     mainOccupation: Option[String] = None,
-     contactPreference: Option[ContactPreferences] = None,
-     doYouHaveANino: Option[YesNoOrUnsure] = None,
-     nino: Option[EncryptedValue] = None,
-     registeredForVAT: Option[YesNoOrUnsure] = None,
-     vatRegNumber: Option[EncryptedValue] = None,
-     registeredForSA: Option[YesNoOrUnsure] = None,
-     sautr: Option[EncryptedValue] = None,
-     address: Option[EncryptedAddress] = None
+final case class EncryptedAboutYou(
+  fullName: Option[EncryptedValue] = None,
+  telephoneNumber: Option[EncryptedValue] = None,
+  emailAddress: Option[EncryptedValue] = None,
+  dateOfBirth: Option[EncryptedValue] = None,
+  mainOccupation: Option[String] = None,
+  contactPreference: Option[ContactPreferences] = None,
+  doYouHaveANino: Option[YesNoOrUnsure] = None,
+  nino: Option[EncryptedValue] = None,
+  registeredForVAT: Option[YesNoOrUnsure] = None,
+  vatRegNumber: Option[EncryptedValue] = None,
+  registeredForSA: Option[YesNoOrUnsure] = None,
+  sautr: Option[EncryptedValue] = None,
+  address: Option[EncryptedAddress] = None
 )
 
 object EncryptedAboutYou {

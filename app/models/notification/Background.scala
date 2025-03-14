@@ -20,14 +20,14 @@ import play.api.libs.json.{Json, OFormat}
 import crypto.EncryptedValue
 import models.IncomeOrGainSource
 
-final case class Background (
+final case class Background(
   haveYouReceivedALetter: Option[Boolean] = None,
   letterReferenceNumber: Option[String] = None,
   disclosureEntity: Option[DisclosureEntity] = None,
   areYouRepresetingAnOrganisation: Option[Boolean] = None,
   organisationName: Option[String] = None,
   offshoreLiabilities: Option[Boolean] = None,
-  onshoreLiabilities: Option[Boolean] = None,  
+  onshoreLiabilities: Option[Boolean] = None,
   incomeSource: Option[Set[IncomeOrGainSource]] = None,
   otherIncomeSource: Option[String] = None
 )
@@ -36,16 +36,16 @@ object Background {
   implicit val format: OFormat[Background] = Json.format[Background]
 }
 
-final case class EncryptedBackground (
+final case class EncryptedBackground(
   haveYouReceivedALetter: Option[Boolean] = None,
   letterReferenceNumber: Option[String] = None,
   disclosureEntity: Option[DisclosureEntity] = None,
   areYouRepresetingAnOrganisation: Option[Boolean] = None,
   organisationName: Option[EncryptedValue] = None,
   offshoreLiabilities: Option[Boolean] = None,
-  onshoreLiabilities: Option[Boolean] = None,  
+  onshoreLiabilities: Option[Boolean] = None,
   incomeSource: Option[Set[IncomeOrGainSource]] = None,
-  otherIncomeSource: Option[String] = None  
+  otherIncomeSource: Option[String] = None
 )
 
 object EncryptedBackground {

@@ -27,64 +27,69 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.{Clock, Instant}
 import java.util.concurrent.TimeUnit
-import com.google.inject.{Inject, ImplementedBy, Singleton}
+import com.google.inject.{ImplementedBy, Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 import crypto.SubmissionEncrypter
 
 @Singleton
-class SubmissionRepositoryImpl @Inject()(
-                                   mongoComponent: MongoComponent,
-                                   appConfig: AppConfig,
-                                   clock: Clock,
-                                   encrypter: SubmissionEncrypter
-                                 )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[EncryptedSubmission] (
-    collectionName = "digital-disclosure",
-    mongoComponent = mongoComponent,
-    domainFormat   = EncryptedSubmission.format,
-    indexes        = Seq(
-      IndexModel(
-        Indexes.ascending("lastUpdated"),
-        IndexOptions()
-          .name("lastUpdatedIdx")
-          .expireAfter(appConfig.cacheTtl, TimeUnit.DAYS)
-      ),
-      IndexModel(
-        Indexes.ascending("userId"),
-        IndexOptions()
-          .name("userIdIdx")
-      ),
-      IndexModel(
-        Indexes.compoundIndex(
-          Indexes.ascending("userId"),
-          Indexes.ascending("submissionId")
+class SubmissionRepositoryImpl @Inject() (
+  mongoComponent: MongoComponent,
+  appConfig: AppConfig,
+  clock: Clock,
+  encrypter: SubmissionEncrypter
+)(implicit ec: ExecutionContext)
+    extends PlayMongoRepository[EncryptedSubmission](
+      collectionName = "digital-disclosure",
+      mongoComponent = mongoComponent,
+      domainFormat = EncryptedSubmission.format,
+      indexes = Seq(
+        IndexModel(
+          Indexes.ascending("lastUpdated"),
+          IndexOptions()
+            .name("lastUpdatedIdx")
+            .expireAfter(appConfig.cacheTtl, TimeUnit.DAYS)
         ),
-        IndexOptions()
-          .name("idsIdx")
-          .unique(true)
+        IndexModel(
+          Indexes.ascending("userId"),
+          IndexOptions()
+            .name("userIdIdx")
+        ),
+        IndexModel(
+          Indexes.compoundIndex(
+            Indexes.ascending("userId"),
+            Indexes.ascending("submissionId")
+          ),
+          IndexOptions()
+            .name("idsIdx")
+            .unique(true)
+        )
       ),
-    ),
-    replaceIndexes = true,
-    extraCodecs = Codecs.playFormatSumCodecs(EncryptedSubmission.format)
-  ) with SubmissionRepository {
+      replaceIndexes = true,
+      extraCodecs = Codecs.playFormatSumCodecs(EncryptedSubmission.format)
+    )
+    with SubmissionRepository {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
   def get(userId: String, submissionId: String): Future[Option[Submission]] =
     collection
-      .find(Filters.and(
-        Filters.equal("userId", userId),
-        Filters.equal("submissionId", submissionId)
-      ))
+      .find(
+        Filters.and(
+          Filters.equal("userId", userId),
+          Filters.equal("submissionId", submissionId)
+        )
+      )
       .map(encrypter.decryptSubmission(_, userId))
       .headOption()
-        
+
   def get(userId: String): Future[Seq[Submission]] =
     collection
-      .find(Filters.and(
-        Filters.equal("userId", userId)
-      ))
+      .find(
+        Filters.and(
+          Filters.equal("userId", userId)
+        )
+      )
       .map(encrypter.decryptSubmission(_, userId))
       .toFuture()
 
@@ -97,22 +102,27 @@ class SubmissionRepositoryImpl @Inject()(
 
     collection
       .replaceOne(
-        filter      = Filters.and(
+        filter = Filters.and(
           Filters.equal("userId", submission.userId),
           Filters.equal("submissionId", submission.submissionId)
         ),
         replacement = encrypter.encryptSubmission(updatedSubmission, submission.userId),
-        options     = ReplaceOptions().upsert(true)
+        options = ReplaceOptions().upsert(true)
       )
       .toFuture()
       .map(_ => true)
   }
 
   def clear(userId: String, submissionId: String): Future[Boolean] =
-    collection.findOneAndDelete(Filters.and(
-      Filters.equal("userId", userId),
-      Filters.equal("submissionId", submissionId)
-    )).toFuture().map(_ => true)
+    collection
+      .findOneAndDelete(
+        Filters.and(
+          Filters.equal("userId", userId),
+          Filters.equal("submissionId", submissionId)
+        )
+      )
+      .toFuture()
+      .map(_ => true)
 
 }
 
@@ -122,4 +132,4 @@ trait SubmissionRepository {
   def get(userId: String, submissionId: String): Future[Option[Submission]]
   def get(userId: String): Future[Seq[Submission]]
   def clear(userId: String, submissionId: String): Future[Boolean]
-} 
+}

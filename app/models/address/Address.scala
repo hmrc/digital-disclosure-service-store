@@ -44,4 +44,3 @@ final case class EncryptedAddress(
 object EncryptedAddress {
   implicit val addressFormat: OFormat[EncryptedAddress] = Json.format[EncryptedAddress]
 }
-

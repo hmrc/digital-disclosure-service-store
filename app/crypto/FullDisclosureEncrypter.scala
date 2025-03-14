@@ -22,7 +22,7 @@ import models.store.FullDisclosure
 import models.EncryptedFullDisclosure
 
 @Singleton
-class FullDisclosureEncrypter @Inject()(
+class FullDisclosureEncrypter @Inject() (
   crypto: SecureGCMCipher,
   notificationEncrypter: NotificationEncrypter
 ) {
@@ -65,17 +65,17 @@ class FullDisclosureEncrypter @Inject()(
 
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
-    EncryptedCaseReference (
+    EncryptedCaseReference(
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
       whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(e)
     )
-  } 
+  }
 
   def decryptCaseReference(caseReference: EncryptedCaseReference, sessionId: String): CaseReference = {
 
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
-    CaseReference (
+    CaseReference(
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
       whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(d)
     )
@@ -103,7 +103,7 @@ class FullDisclosureEncrypter @Inject()(
       email = reasonForDisclosingNow.email.map(e),
       telephone = reasonForDisclosingNow.telephone.map(e)
     )
-  } 
+  }
 
   def decryptReasonForDisclosingNow(
     reasonForDisclosingNow: EncryptedReasonForDisclosingNow,

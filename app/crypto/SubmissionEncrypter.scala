@@ -21,7 +21,7 @@ import models._
 import models.store._
 
 @Singleton
-class SubmissionEncrypter @Inject()(
+class SubmissionEncrypter @Inject() (
   notificationEncrypter: NotificationEncrypter,
   fullDisclosureEncrypter: FullDisclosureEncrypter
 ) {

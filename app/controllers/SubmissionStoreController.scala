@@ -16,48 +16,53 @@
 
 package controllers
 
-import play.api.mvc.{AnyContent, Action, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import javax.inject.{Inject, Singleton}
 import repositories.SubmissionRepository
 import models.store.Submission
 import scala.concurrent.ExecutionContext
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.internalauth.client._
 import controllers.Permissions.internalAuthPermission
 
 @Singleton()
-class SubmissionStoreController @Inject()(
-    submissionRepository: SubmissionRepository,
-    auth: BackendAuthComponents,
-    cc: ControllerComponents
-  )(implicit ec: ExecutionContext) extends BaseController(cc) {
+class SubmissionStoreController @Inject() (
+  submissionRepository: SubmissionRepository,
+  auth: BackendAuthComponents,
+  cc: ControllerComponents
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc) {
 
   val permission = internalAuthPermission("notification")
 
-  def get(userId: String, submissionId: String): Action[AnyContent] = 
-    auth.authorizedAction(permission).async { 
-      submissionRepository.get(userId, submissionId).map { _ match {
-        case Some(submission) => Ok(Json.toJson(submission))
-        case None => NotFound("Submission not found")
-      }}
+  def get(userId: String, submissionId: String): Action[AnyContent] =
+    auth.authorizedAction(permission).async {
+      submissionRepository.get(userId, submissionId).map {
+        _ match {
+          case Some(submission) => Ok(Json.toJson(submission))
+          case None             => NotFound("Submission not found")
+        }
+      }
     }
 
-  def getAll(userId: String): Action[AnyContent] = 
-    auth.authorizedAction(permission).async { 
-      submissionRepository.get(userId).map { _ match {
-        case Nil => NotFound("Submissions not found")
-        case submissions => Ok(Json.toJson(submissions))
-      }}
+  def getAll(userId: String): Action[AnyContent] =
+    auth.authorizedAction(permission).async {
+      submissionRepository.get(userId).map {
+        _ match {
+          case Nil         => NotFound("Submissions not found")
+          case submissions => Ok(Json.toJson(submissions))
+        }
+      }
     }
 
-  def set(): Action[JsValue] = 
+  def set(): Action[JsValue] =
     auth.authorizedAction(permission).async(parse.json) { implicit request =>
-      withValidJson[Submission]{ submission =>
+      withValidJson[Submission] { submission =>
         submissionRepository.set(submission).map(_ => NoContent)
       }
     }
 
-  def delete(userId: String, submissionId: String): Action[JsValue] = 
+  def delete(userId: String, submissionId: String): Action[JsValue] =
     auth.authorizedAction(permission).async(parse.json) { _ =>
       submissionRepository.clear(userId, submissionId).map(_ => NoContent)
     }

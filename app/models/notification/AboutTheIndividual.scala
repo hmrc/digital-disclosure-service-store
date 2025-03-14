@@ -23,7 +23,7 @@ import models.address.Address
 import crypto.EncryptedValue
 import models.address.EncryptedAddress
 
-final case class AboutTheIndividual (
+final case class AboutTheIndividual(
   fullName: Option[String] = None,
   dateOfBirth: Option[LocalDate] = None,
   mainOccupation: Option[String] = None,
@@ -40,7 +40,7 @@ object AboutTheIndividual {
   implicit val format: OFormat[AboutTheIndividual] = Json.format[AboutTheIndividual]
 }
 
-final case class EncryptedAboutTheIndividual (
+final case class EncryptedAboutTheIndividual(
   fullName: Option[EncryptedValue] = None,
   dateOfBirth: Option[EncryptedValue] = None,
   mainOccupation: Option[String] = None,

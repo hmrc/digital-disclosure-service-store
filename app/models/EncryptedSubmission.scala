@@ -32,7 +32,7 @@ object EncryptedSubmission {
   implicit val format: OFormat[EncryptedSubmission] = Json.using[Json.WithDefaultValues].format[EncryptedSubmission]
 }
 
-final case class EncryptedNotification (
+final case class EncryptedNotification(
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
@@ -51,14 +51,14 @@ object EncryptedNotification {
 
     (
       (__ \ "userId").read[String] and
-      (__ \ "submissionId").read[String] and
-      (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat) and
-      ((__ \ "created").read(MongoJavatimeFormats.instantFormat) or Reads.pure(Instant.now())) and
-      (__ \ "metadata").read[Metadata] and
-      (__ \ "personalDetails").read[EncryptedPersonalDetails] and
-      (__ \ "customerId").readNullable[CustomerId] and
-      ((__ \ "madeDeclaration").read[Boolean] or Reads.pure(false))
-    ) (EncryptedNotification.apply _)
+        (__ \ "submissionId").read[String] and
+        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat) and
+        ((__ \ "created").read(MongoJavatimeFormats.instantFormat) or Reads.pure(Instant.now())) and
+        (__ \ "metadata").read[Metadata] and
+        (__ \ "personalDetails").read[EncryptedPersonalDetails] and
+        (__ \ "customerId").readNullable[CustomerId] and
+        ((__ \ "madeDeclaration").read[Boolean] or Reads.pure(false))
+    )(EncryptedNotification.apply _)
   }
 
   val writes: OWrites[EncryptedNotification] = {
@@ -67,20 +67,20 @@ object EncryptedNotification {
 
     (
       (__ \ "userId").write[String] and
-      (__ \ "submissionId").write[String] and
-      (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat) and
-      (__ \ "created").write(MongoJavatimeFormats.instantFormat) and
-      (__ \ "metadata").write[Metadata] and
-      (__ \ "personalDetails").write[EncryptedPersonalDetails] and
-      (__ \ "customerId").writeNullable[CustomerId] and
-      (__ \ "madeDeclaration").write[Boolean] 
-    ) (unlift(EncryptedNotification.unapply))
+        (__ \ "submissionId").write[String] and
+        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat) and
+        (__ \ "created").write(MongoJavatimeFormats.instantFormat) and
+        (__ \ "metadata").write[Metadata] and
+        (__ \ "personalDetails").write[EncryptedPersonalDetails] and
+        (__ \ "customerId").writeNullable[CustomerId] and
+        (__ \ "madeDeclaration").write[Boolean]
+    )(unlift(EncryptedNotification.unapply))
   }
 
   implicit val format: OFormat[EncryptedNotification] = OFormat(reads, writes)
 }
 
-final case class EncryptedFullDisclosure (
+final case class EncryptedFullDisclosure(
   userId: String,
   submissionId: String,
   lastUpdated: Instant,
@@ -104,19 +104,19 @@ object EncryptedFullDisclosure {
 
     (
       (__ \ "userId").read[String] and
-      (__ \ "submissionId").read[String] and
-      (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat) and
-      ((__ \ "created").read(MongoJavatimeFormats.instantFormat) or Reads.pure(Instant.now())) and
-      (__ \ "metadata").read[Metadata] and
-      (__ \ "caseReference").read[EncryptedCaseReference] and
-      (__ \ "personalDetails").read[EncryptedPersonalDetails] and
-      (__ \ "onshoreLiabilities").readNullable[OnshoreLiabilities] and
-      (__ \ "offshoreLiabilities").read[OffshoreLiabilities] and
-      (__ \ "otherLiabilities").read[OtherLiabilities] and
-      (__ \ "reasonForDisclosingNow").read[EncryptedReasonForDisclosingNow] and
-      (__ \ "customerId").readNullable[CustomerId] and
-      ((__ \ "madeDeclaration").read[Boolean] or Reads.pure(false))
-    ) (EncryptedFullDisclosure.apply _)
+        (__ \ "submissionId").read[String] and
+        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat) and
+        ((__ \ "created").read(MongoJavatimeFormats.instantFormat) or Reads.pure(Instant.now())) and
+        (__ \ "metadata").read[Metadata] and
+        (__ \ "caseReference").read[EncryptedCaseReference] and
+        (__ \ "personalDetails").read[EncryptedPersonalDetails] and
+        (__ \ "onshoreLiabilities").readNullable[OnshoreLiabilities] and
+        (__ \ "offshoreLiabilities").read[OffshoreLiabilities] and
+        (__ \ "otherLiabilities").read[OtherLiabilities] and
+        (__ \ "reasonForDisclosingNow").read[EncryptedReasonForDisclosingNow] and
+        (__ \ "customerId").readNullable[CustomerId] and
+        ((__ \ "madeDeclaration").read[Boolean] or Reads.pure(false))
+    )(EncryptedFullDisclosure.apply _)
   }
 
   val writes: OWrites[EncryptedFullDisclosure] = {
@@ -125,19 +125,19 @@ object EncryptedFullDisclosure {
 
     (
       (__ \ "userId").write[String] and
-      (__ \ "submissionId").write[String] and
-      (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat) and
-      (__ \ "created").write(MongoJavatimeFormats.instantFormat) and
-      (__ \ "metadata").write[Metadata] and
-      (__ \ "caseReference").write[EncryptedCaseReference] and
-      (__ \ "personalDetails").write[EncryptedPersonalDetails] and
-      (__ \ "onshoreLiabilities").writeNullable[OnshoreLiabilities] and
-      (__ \ "offshoreLiabilities").write[OffshoreLiabilities] and
-      (__ \ "otherLiabilities").write[OtherLiabilities] and
-      (__ \ "reasonForDisclosingNow").write[EncryptedReasonForDisclosingNow] and
-      (__ \ "customerId").writeNullable[CustomerId] and
-      (__ \ "madeDeclaration").write[Boolean]
-    ) (unlift(EncryptedFullDisclosure.unapply))
+        (__ \ "submissionId").write[String] and
+        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat) and
+        (__ \ "created").write(MongoJavatimeFormats.instantFormat) and
+        (__ \ "metadata").write[Metadata] and
+        (__ \ "caseReference").write[EncryptedCaseReference] and
+        (__ \ "personalDetails").write[EncryptedPersonalDetails] and
+        (__ \ "onshoreLiabilities").writeNullable[OnshoreLiabilities] and
+        (__ \ "offshoreLiabilities").write[OffshoreLiabilities] and
+        (__ \ "otherLiabilities").write[OtherLiabilities] and
+        (__ \ "reasonForDisclosingNow").write[EncryptedReasonForDisclosingNow] and
+        (__ \ "customerId").writeNullable[CustomerId] and
+        (__ \ "madeDeclaration").write[Boolean]
+    )(unlift(EncryptedFullDisclosure.unapply))
   }
 
   implicit val format: OFormat[EncryptedFullDisclosure] = OFormat(reads, writes)

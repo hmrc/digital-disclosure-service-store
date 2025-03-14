@@ -21,7 +21,7 @@ import models.address.Address
 import crypto.EncryptedValue
 import models.address.EncryptedAddress
 
-final case class AboutTheTrust (
+final case class AboutTheTrust(
   name: Option[String] = None,
   address: Option[Address] = None
 )
@@ -30,7 +30,7 @@ object AboutTheTrust {
   implicit val format: OFormat[AboutTheTrust] = Json.format[AboutTheTrust]
 }
 
-final case class EncryptedAboutTheTrust (
+final case class EncryptedAboutTheTrust(
   name: Option[EncryptedValue] = None,
   address: Option[EncryptedAddress] = None
 )

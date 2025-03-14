@@ -17,7 +17,7 @@
 package models.disclosure
 
 import play.api.libs.json.{Json, OFormat}
-import models.{AdviceGiven, WhyAreYouMakingADisclosure, WhichEmailAddressCanWeContactYouWith, WhichTelephoneNumberCanWeContactYouWith}
+import models.{AdviceGiven, WhichEmailAddressCanWeContactYouWith, WhichTelephoneNumberCanWeContactYouWith, WhyAreYouMakingADisclosure}
 import crypto.EncryptedValue
 
 final case class ReasonForDisclosingNow(

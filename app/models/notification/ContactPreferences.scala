@@ -21,17 +21,17 @@ import play.api.libs.json.{Format, JsError, JsString, JsSuccess, Json, OFormat, 
 sealed trait Preference
 object Preference {
   implicit val reads: Reads[Preference] = Reads {
-    case JsString("Email") => JsSuccess(Email)
+    case JsString("Email")     => JsSuccess(Email)
     case JsString("Telephone") => JsSuccess(Telephone)
-    case _ => JsError("error.invalid")
+    case _                     => JsError("error.invalid")
   }
 
   implicit val writes: Writes[Preference] = Writes[Preference] {
-    case Email => Json.toJson("Email")
+    case Email     => Json.toJson("Email")
     case Telephone => Json.toJson("Telephone")
   }
 
-  implicit val format: Format[Preference] =  Format(reads, writes)
+  implicit val format: Format[Preference] = Format(reads, writes)
 }
 
 case object Email extends Preference

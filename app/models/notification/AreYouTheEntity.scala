@@ -29,17 +29,18 @@ object AreYouTheEntity {
   case object PowerOfAttorney extends WithName("powerOfAttorney") with AreYouTheEntity
 
   implicit val reads: Reads[AreYouTheEntity] = Reads {
-    case JsString("yes") => JsSuccess(YesIAm)
-    case JsString("accountant") => JsSuccess(IAmAnAccountantOrTaxAgent)
-    case JsString("friend") => JsSuccess(IAmAFriend)
+    case JsString("yes")                   => JsSuccess(YesIAm)
+    case JsString("accountant")            => JsSuccess(IAmAnAccountantOrTaxAgent)
+    case JsString("friend")                => JsSuccess(IAmAFriend)
     case JsString("voluntaryOrganisation") => JsSuccess(VoluntaryOrganisation)
-    case JsString("powerOfAttorney") => JsSuccess(PowerOfAttorney)
-    case value: JsValue => value.validate[Boolean] match {
-        case JsSuccess(true, _) => JsSuccess(YesIAm)
+    case JsString("powerOfAttorney")       => JsSuccess(PowerOfAttorney)
+    case value: JsValue                    =>
+      value.validate[Boolean] match {
+        case JsSuccess(true, _)  => JsSuccess(YesIAm)
         case JsSuccess(false, _) => JsSuccess(IAmAnAccountantOrTaxAgent)
-        case _ => JsError("error.invalid")
+        case _                   => JsError("error.invalid")
       }
-    case _ => JsError("error.invalid")
+    case _                                 => JsError("error.invalid")
   }
 
   implicit val writes: Writes[AreYouTheEntity] = Writes[AreYouTheEntity](value => JsString(value.toString))

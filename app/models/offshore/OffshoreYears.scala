@@ -21,14 +21,14 @@ import scala.util.Try
 
 sealed trait OffshoreYears
 
-final case class TaxYearStarting(startYear: Int) extends OffshoreYears with Ordered[TaxYearStarting]  {
+final case class TaxYearStarting(startYear: Int) extends OffshoreYears with Ordered[TaxYearStarting] {
   override def toString = startYear.toString
 
   def compare(that: TaxYearStarting) = (that.startYear) - (this.startYear)
 }
 
 object TaxYearStarting {
-  implicit val format: Format[TaxYearStarting] =  Json.format[TaxYearStarting]
+  implicit val format: Format[TaxYearStarting] = Json.format[TaxYearStarting]
 }
 
 case object ReasonableExcusePriorTo extends OffshoreYears {
@@ -49,29 +49,30 @@ object RawOffshoreYears {
 
 object OffshoreYears {
 
-  def fromString(str: String): Option[OffshoreYears] = {
+  def fromString(str: String): Option[OffshoreYears] =
     str match {
       case "reasonableExcusePriorTo" => Some(ReasonableExcusePriorTo)
       case "carelessPriorTo"         => Some(CarelessPriorTo)
       case "deliberatePriorTo"       => Some(DeliberatePriorTo)
       case RawOffshoreYears(year)    => Some(TaxYearStarting(year))
-      case _ => None
+      case _                         => None
     }
-  }
 
   implicit def reads: Reads[OffshoreYears] = Reads {
     case JsString(str) =>
-      fromString(str).map {
-        s => JsSuccess(s)
-      }.getOrElse(JsError("error.invalid"))
-    case _ =>
+      fromString(str)
+        .map { s =>
+          JsSuccess(s)
+        }
+        .getOrElse(JsError("error.invalid"))
+    case _             =>
       JsError("error.invalid")
   }
 
-  implicit val writes: Writes[OffshoreYears] = Writes[OffshoreYears] {
-    value => JsString(value.toString)
+  implicit val writes: Writes[OffshoreYears] = Writes[OffshoreYears] { value =>
+    JsString(value.toString)
   }
-  
-  implicit val format: Format[OffshoreYears] =  Format(reads, writes)
+
+  implicit val format: Format[OffshoreYears] = Format(reads, writes)
 
 }
