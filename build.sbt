@@ -14,7 +14,7 @@ lazy val microservice = Project("digital-disclosure-service-store", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion        := 0,
-    scalaVersion        := "2.13.12",
+    scalaVersion        := "2.13.16",
     targetJvm           := "jvm-11",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     libraryDependencySchemes ++= Seq(
