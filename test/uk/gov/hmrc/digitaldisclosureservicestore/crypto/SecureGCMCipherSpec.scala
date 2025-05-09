@@ -28,20 +28,20 @@ import play.api.Configuration
 
 class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
 
-  private val secretKey = "zjWYSlNW79BKWTONyGFQsT7buBcWiiOkx8blzp6LNVw="
-  private val previousKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
-  private val textToEncrypt = "textNotEncrypted"
+  private val secretKey      = "zjWYSlNW79BKWTONyGFQsT7buBcWiiOkx8blzp6LNVw="
+  private val previousKey    = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
+  private val textToEncrypt  = "textNotEncrypted"
   private val associatedText = "associatedText"
-  private val encryptedText = EncryptedValue(
+  private val encryptedText  = EncryptedValue(
     "yyOKSD/XoUFKjW5sTbV9VRLiAaT9hznKMTBcZRaTyXE=",
     "lgKRUqUE4SELI2T9YW3Z6DC38tNRG0sgsKEwQ9HDnulzuPOl3nHV56buIhglPqZve7Q+BKrm3/61Yuo3M1rsya0Km7NF9aozNG0E+M6uHEHQANDu+J5gz3zaSNwInuvf"
   )
 
   implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
-  private val encrypter = new SecureGCMCipherImpl
+  private val encrypter             = new SecureGCMCipherImpl
 
   val appConfigPrevious: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> previousKey))
-  val encrypterWithPreviousKey = new SecureGCMCipherImpl()(appConfigPrevious)
+  val encrypterWithPreviousKey     = new SecureGCMCipherImpl()(appConfigPrevious)
 
   "encrypt" - {
 
@@ -54,7 +54,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override val ALGORITHM_TO_TRANSFORM_STRING: String = "invalid"
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
@@ -65,7 +65,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override def getCipherInstance: Cipher = throw new NoSuchPaddingException()
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
@@ -76,7 +76,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override def getCipherInstance: Cipher = throw new InvalidAlgorithmParameterException()
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
@@ -87,7 +87,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override def getCipherInstance: Cipher = throw new IllegalStateException()
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
@@ -98,7 +98,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override def getCipherInstance: Cipher = throw new UnsupportedOperationException()
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
@@ -109,7 +109,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override def getCipherInstance: Cipher = throw new IllegalBlockSizeException()
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
@@ -120,7 +120,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override def getCipherInstance: Cipher = throw new RuntimeException()
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.encrypt(textToEncrypt, associatedText)
       )
 
@@ -129,17 +129,18 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
 
     "return an EncryptionDecryptionError if the secret key is an invalid type" in {
 
-      val keyGen = KeyGenerator.getInstance("DES")
-      val key = keyGen.generateKey()
+      val keyGen            = KeyGenerator.getInstance("DES")
+      val key               = keyGen.generateKey()
       val secureGCMEncryter = new SecureGCMCipherImpl {
         override val ALGORITHM_KEY: String = "DES"
       }
-      val encryptedAttempt = intercept[EncryptionDecryptionException](
+      val encryptedAttempt  = intercept[EncryptionDecryptionException](
         secureGCMEncryter.generateCipherText(
           textToEncrypt,
           associatedText.getBytes,
           new GCMParameterSpec(96, "hjdfbhvbhvbvjvjfvb".getBytes),
-          key)
+          key
+        )
       )
 
       encryptedAttempt.failureReason mustBe "Key being used is not valid. " +
@@ -155,14 +156,16 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
     }
 
     "must decrypt text when a previous key listed in config was used to encrypt it" in {
-      lazy val appConfWithBoth: AppConfig = new AppConfig(Configuration(
-        "mongodb.encryption.key" -> secretKey,
-        "mongodb.encryption.previousKey" -> previousKey
-      ))
-      val encrypterWithBothKeys = new SecureGCMCipherImpl()(appConfWithBoth)
+      lazy val appConfWithBoth: AppConfig = new AppConfig(
+        Configuration(
+          "mongodb.encryption.key"         -> secretKey,
+          "mongodb.encryption.previousKey" -> previousKey
+        )
+      )
+      val encrypterWithBothKeys           = new SecureGCMCipherImpl()(appConfWithBoth)
 
       val previouslyEncryptedValue = encrypterWithPreviousKey.encrypt(textToEncrypt, associatedText)
-      val decryptedText = encrypterWithBothKeys.decrypt(previouslyEncryptedValue, associatedText)
+      val decryptedText            = encrypterWithBothKeys.decrypt(previouslyEncryptedValue, associatedText)
       decryptedText mustEqual textToEncrypt
     }
 
@@ -177,7 +180,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
     }
 
     "must return an EncryptionDecryptionException if the encrypted value is different" in {
-      val invalidText = Base64.getEncoder.encodeToString("invalid value".getBytes)
+      val invalidText           = Base64.getEncoder.encodeToString("invalid value".getBytes)
       val invalidEncryptedValue = EncryptedValue(invalidText, encryptedText.nonce)
 
       val decryptAttempt = intercept[EncryptionDecryptionException](
@@ -188,7 +191,7 @@ class SecureGCMCipherSpec extends AnyFreeSpec with Matchers {
     }
 
     "must return an EncryptionDecryptionException if the nonce is different" in {
-      val invalidNonce = Base64.getEncoder.encodeToString("invalid value".getBytes)
+      val invalidNonce          = Base64.getEncoder.encodeToString("invalid value".getBytes)
       val invalidEncryptedValue = EncryptedValue(encryptedText.value, invalidNonce)
 
       val decryptAttempt = intercept[EncryptionDecryptionException](

@@ -20,7 +20,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsString, JsSuccess, Json}
 
-class AreYouTheEntitySpec extends AnyWordSpec with Matchers  {
+class AreYouTheEntitySpec extends AnyWordSpec with Matchers {
 
   "reads" should {
     "convert JsValue true to YesIAm" in {
@@ -72,5 +72,5 @@ class AreYouTheEntitySpec extends AnyWordSpec with Matchers  {
     }
 
   }
-  
+
 }

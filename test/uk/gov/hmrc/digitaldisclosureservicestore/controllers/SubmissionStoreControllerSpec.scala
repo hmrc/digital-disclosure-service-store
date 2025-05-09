@@ -38,7 +38,12 @@ import repositories.SubmissionRepository
 import uk.gov.hmrc.internalauth.client._
 import uk.gov.hmrc.internalauth.client.test.{BackendAuthComponentsStub, StubBehaviour}
 
-class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach with MaterializerSpec {
+class SubmissionStoreControllerSpec
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with BeforeAndAfterEach
+    with MaterializerSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -46,21 +51,29 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
   }
 
   implicit val cc: ControllerComponents = Helpers.stubControllerComponents()
-  val mockSubmissionRepository = mock[SubmissionRepository]  
-  val mockStubBehaviour = mock[StubBehaviour]
-  val expectedPredicate = Predicate.Permission(Resource(ResourceType("digital-disclosure-service-store"), ResourceLocation("notification")), IAAction("WRITE"))
+  val mockSubmissionRepository          = mock[SubmissionRepository]
+  val mockStubBehaviour                 = mock[StubBehaviour]
+  val expectedPredicate                 = Predicate.Permission(
+    Resource(ResourceType("digital-disclosure-service-store"), ResourceLocation("notification")),
+    IAAction("WRITE")
+  )
   when(mockStubBehaviour.stubAuth(Some(expectedPredicate), Retrieval.EmptyRetrieval)).thenReturn(Future.unit)
-  private val controller = new SubmissionStoreController(mockSubmissionRepository, BackendAuthComponentsStub(mockStubBehaviour), Helpers.stubControllerComponents())
+  private val controller                = new SubmissionStoreController(
+    mockSubmissionRepository,
+    BackendAuthComponentsStub(mockStubBehaviour),
+    Helpers.stubControllerComponents()
+  )
 
-  val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-  val testNotification: Submission = Notification("123", "123", instant, instant, Metadata(), PersonalDetails(Background(), AboutYou()))
-  
+  val instant                      = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
+  val testNotification: Submission =
+    Notification("123", "123", instant, instant, Metadata(), PersonalDetails(Background(), AboutYou()))
+
   "GET /notification/user/:userId" should {
     "return 200" in {
       when(mockSubmissionRepository.get("123")) thenReturn Future.successful(Seq(testNotification))
 
       val fakeRequest = FakeRequest("GET", "/notification/user/123").withHeaders("Authorization" -> "Token some-token")
-      val result = controller.getAll("123")(fakeRequest)
+      val result      = controller.getAll("123")(fakeRequest)
       status(result) shouldBe Status.OK
       val body = contentAsJson(result).as[Seq[Notification]]
       body shouldBe Seq(testNotification)
@@ -70,7 +83,7 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
       when(mockSubmissionRepository.get("123")) thenReturn Future.successful(Nil)
 
       val fakeRequest = FakeRequest("GET", "/notification/123").withHeaders("Authorization" -> "Token some-token")
-      val result = controller.getAll("123")(fakeRequest)
+      val result      = controller.getAll("123")(fakeRequest)
       status(result) shouldBe Status.NOT_FOUND
     }
   }
@@ -79,8 +92,9 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
     "return 200" in {
       when(mockSubmissionRepository.get("123", "456")) thenReturn Future.successful(Some(testNotification))
 
-      val fakeRequest = FakeRequest("GET", "/notification/user/123/id/456").withHeaders("Authorization" -> "Token some-token")
-      val result = controller.get("123", "456")(fakeRequest)
+      val fakeRequest =
+        FakeRequest("GET", "/notification/user/123/id/456").withHeaders("Authorization" -> "Token some-token")
+      val result      = controller.get("123", "456")(fakeRequest)
       status(result) shouldBe Status.OK
       val body = contentAsJson(result).as[Notification]
       body shouldBe testNotification
@@ -89,8 +103,9 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
     "return 404" in {
       when(mockSubmissionRepository.get("123", "456")) thenReturn Future.successful(None)
 
-      val fakeRequest = FakeRequest("GET", "/notification/user/123/id/456").withHeaders("Authorization" -> "Token some-token")
-      val result = controller.get("123", "456")(fakeRequest)
+      val fakeRequest =
+        FakeRequest("GET", "/notification/user/123/id/456").withHeaders("Authorization" -> "Token some-token")
+      val result      = controller.get("123", "456")(fakeRequest)
       status(result) shouldBe Status.NOT_FOUND
     }
   }
@@ -99,8 +114,13 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
     "return 204" in {
       when(mockSubmissionRepository.set(testNotification)) thenReturn Future.successful(true)
 
-      val fakeRequest = FakeRequest(method = "PUT", uri = "/notification", headers = FakeHeaders(Seq("Authorization" -> "Token some-token")), body = Json.toJson(testNotification))
-      val result = controller.set()(fakeRequest)
+      val fakeRequest = FakeRequest(
+        method = "PUT",
+        uri = "/notification",
+        headers = FakeHeaders(Seq("Authorization" -> "Token some-token")),
+        body = Json.toJson(testNotification)
+      )
+      val result      = controller.set()(fakeRequest)
       status(result) shouldBe Status.NO_CONTENT
     }
   }
@@ -109,8 +129,13 @@ class SubmissionStoreControllerSpec extends AnyWordSpec with Matchers with Mocki
     "return 204" in {
       when(mockSubmissionRepository.clear("123", "456")) thenReturn Future.successful(true)
 
-      val fakeRequest = FakeRequest(method = "DELETE", uri = "/notification", headers = FakeHeaders(Seq("Authorization" -> "Token some-token")), body = Json.toJson(testNotification))
-      val result = controller.delete("123", "456")(fakeRequest)
+      val fakeRequest = FakeRequest(
+        method = "DELETE",
+        uri = "/notification",
+        headers = FakeHeaders(Seq("Authorization" -> "Token some-token")),
+        body = Json.toJson(testNotification)
+      )
+      val result      = controller.delete("123", "456")(fakeRequest)
       status(result) shouldBe Status.NO_CONTENT
     }
   }
