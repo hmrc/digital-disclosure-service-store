@@ -29,19 +29,19 @@ import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 
 class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
 
-  private val secretKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
+  private val secretKey                  = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
   lazy implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
-  private val associatedText = "associatedText"
-  private val textToEncrypt = "textNotEncrypted"
+  private val associatedText             = "associatedText"
+  private val textToEncrypt              = "textNotEncrypted"
 
   val notificationEncrypter = new NotificationEncrypter(appConfig)
-  val sut = new FullDisclosureEncrypter(notificationEncrypter, appConfig)
+  val sut                   = new FullDisclosureEncrypter(notificationEncrypter, appConfig)
 
   "FullDisclosureEncrypter" - {
 
     "must encrypt/decrypt a FullDisclosure" in {
       val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-      val model = FullDisclosure(
+      val model   = FullDisclosure(
         userId = textToEncrypt,
         submissionId = textToEncrypt,
         lastUpdated = instant,
@@ -71,7 +71,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
 
     "must encrypt/decrypt a CaseReference" in {
 
-      val model = CaseReference (
+      val model = CaseReference(
         doYouHaveACaseReference = Some(true),
         whatIsTheCaseReference = Some(textToEncrypt)
       )
@@ -110,20 +110,20 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       encryptedModel.receivedAdvice mustEqual model.receivedAdvice
       encryptedModel.personWhoGaveAdvice.get.value must not equal model.personWhoGaveAdvice.get
       encryptedModel.adviceOnBehalfOfBusiness mustEqual model.adviceOnBehalfOfBusiness
-      encryptedModel.adviceBusinessName.get.value must not equal model.adviceBusinessName.get
+      encryptedModel.adviceBusinessName.get.value  must not equal model.adviceBusinessName.get
       encryptedModel.personProfession mustEqual model.personProfession
       encryptedModel.adviceGiven mustEqual model.adviceGiven
       encryptedModel.whichEmail mustEqual model.whichEmail
       encryptedModel.whichPhone mustEqual model.whichPhone
-      encryptedModel.email.get.value must not equal model.email.get
-      encryptedModel.telephone.get.value must not equal model.telephone.get
+      encryptedModel.email.get.value               must not equal model.email.get
+      encryptedModel.telephone.get.value           must not equal model.telephone.get
 
       sut.decryptReasonForDisclosingNow(encryptedModel, associatedText) mustEqual model
     }
 
     "must encrypt/decrypt a full disclosure with onshore liabilities" in {
-      val date = LocalDate.now
-      val liabilities = OnshoreTaxYearLiabilities(
+      val date                                                                = LocalDate.now
+      val liabilities                                                         = OnshoreTaxYearLiabilities(
         lettingIncome = Some(BigInt(2000)),
         gains = Some(BigInt(2000)),
         unpaidTax = BigInt(2000),
@@ -134,42 +134,51 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         undeclaredIncomeOrGain = Some("Some gain"),
         residentialTaxReduction = Some(false)
       )
-      val whySet: Set[WhyAreYouMakingThisOnshoreDisclosure] = Set(WhyAreYouMakingThisOnshoreDisclosure.DidNotNotifyHasExcuse)
-      val yearsSet: Set[OnshoreYears] = Set(OnshoreYearStarting(2012), PriorToThreeYears, PriorToFiveYears, PriorToNineteenYears)
-      val corporationTax = Set(CorporationTaxLiability (
-        periodEnd = date,
-        howMuchIncome = BigInt(2000),
-        howMuchUnpaid = BigInt(2000),
-        howMuchInterest = BigInt(2000),
-        penaltyRate = 123,
-        penaltyRateReason = "Some reason"
-      ))
-      val directorLoan = Set(DirectorLoanAccountLiabilities (
-        name = "Name",
-        periodEnd = date,
-        overdrawn = BigInt(2000),
-        unpaidTax = BigInt(2000),
-        interest = BigInt(2000),
-        penaltyRate = 123,
-        penaltyRateReason = "Some reason"
-      ))
-      val lettingProperty = Seq(LettingProperty(
-        address = None,
-        dateFirstLetOut = Some(date),
-        stoppedBeingLetOut = Some(true),
-        noLongerBeingLetOut = None,
-        fhl = Some(false),
-        isJointOwnership = Some(true),
-        isMortgageOnProperty = Some(false),
-        percentageIncomeOnProperty = Some(123),
-        wasFurnished = Some(false),
-        typeOfMortgage = None,
-        otherTypeOfMortgage = Some("Some mortgage"),
-        wasPropertyManagerByAgent = Some(true),
-        didTheLettingAgentCollectRentOnYourBehalf = Some(false)
-      ))
-      val whichLiabilitiesSet: Set[WhatOnshoreLiabilitiesDoYouNeedToDisclose] = Set(WhatOnshoreLiabilitiesDoYouNeedToDisclose.BusinessIncome)
-      val onshoreLiabilities = OnshoreLiabilities(
+      val whySet: Set[WhyAreYouMakingThisOnshoreDisclosure]                   =
+        Set(WhyAreYouMakingThisOnshoreDisclosure.DidNotNotifyHasExcuse)
+      val yearsSet: Set[OnshoreYears]                                         =
+        Set(OnshoreYearStarting(2012), PriorToThreeYears, PriorToFiveYears, PriorToNineteenYears)
+      val corporationTax                                                      = Set(
+        CorporationTaxLiability(
+          periodEnd = date,
+          howMuchIncome = BigInt(2000),
+          howMuchUnpaid = BigInt(2000),
+          howMuchInterest = BigInt(2000),
+          penaltyRate = 123,
+          penaltyRateReason = "Some reason"
+        )
+      )
+      val directorLoan                                                        = Set(
+        DirectorLoanAccountLiabilities(
+          name = "Name",
+          periodEnd = date,
+          overdrawn = BigInt(2000),
+          unpaidTax = BigInt(2000),
+          interest = BigInt(2000),
+          penaltyRate = 123,
+          penaltyRateReason = "Some reason"
+        )
+      )
+      val lettingProperty                                                     = Seq(
+        LettingProperty(
+          address = None,
+          dateFirstLetOut = Some(date),
+          stoppedBeingLetOut = Some(true),
+          noLongerBeingLetOut = None,
+          fhl = Some(false),
+          isJointOwnership = Some(true),
+          isMortgageOnProperty = Some(false),
+          percentageIncomeOnProperty = Some(123),
+          wasFurnished = Some(false),
+          typeOfMortgage = None,
+          otherTypeOfMortgage = Some("Some mortgage"),
+          wasPropertyManagerByAgent = Some(true),
+          didTheLettingAgentCollectRentOnYourBehalf = Some(false)
+        )
+      )
+      val whichLiabilitiesSet: Set[WhatOnshoreLiabilitiesDoYouNeedToDisclose] =
+        Set(WhatOnshoreLiabilitiesDoYouNeedToDisclose.BusinessIncome)
+      val onshoreLiabilities                                                  = OnshoreLiabilities(
         behaviour = Some(whySet),
         excuseForNotNotifying = Some(ReasonableExcuseOnshore("Some excuse", "Some years")),
         reasonableCare = Some(ReasonableCareOnshore("Some excuse", "Some years")),
@@ -191,8 +200,8 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         corporationTaxLiabilities = Some(corporationTax),
         directorLoanAccountLiabilities = Some(directorLoan)
       )
-      val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-      val model = FullDisclosure(
+      val instant                                                             = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
+      val model                                                               = FullDisclosure(
         userId = textToEncrypt,
         submissionId = textToEncrypt,
         lastUpdated = instant,
@@ -214,7 +223,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
 
     "must encrypt/decrypt a full disclosure with offshore liabilities" in {
 
-      val liabilities = TaxYearLiabilities(
+      val liabilities                                     = TaxYearLiabilities(
         income = BigInt(2000),
         chargeableTransfers = BigInt(2000),
         capitalGains = BigInt(2000),
@@ -225,10 +234,11 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         undeclaredIncomeOrGain = Some("Some gain"),
         foreignTaxCredit = false
       )
-      val whySet: Set[WhyAreYouMakingThisDisclosure] = Set(WhyAreYouMakingThisDisclosure.DidNotNotifyHasExcuse)
-      val yearsSet: Set[OffshoreYears] = Set(TaxYearStarting(2012), ReasonableExcusePriorTo, CarelessPriorTo, DeliberatePriorTo)
+      val whySet: Set[WhyAreYouMakingThisDisclosure]      = Set(WhyAreYouMakingThisDisclosure.DidNotNotifyHasExcuse)
+      val yearsSet: Set[OffshoreYears]                    =
+        Set(TaxYearStarting(2012), ReasonableExcusePriorTo, CarelessPriorTo, DeliberatePriorTo)
       val interpretationSet: Set[YourLegalInterpretation] = Set(YourLegalInterpretation.AnotherIssue)
-      val offshoreLiabilities = OffshoreLiabilities(
+      val offshoreLiabilities                             = OffshoreLiabilities(
         behaviour = Some(whySet),
         excuseForNotNotifying = Some(WhatIsYourReasonableExcuse("Some excuse", "Some years")),
         reasonableCare = Some(WhatReasonableCareDidYouTake("Some excuse", "Some years")),
@@ -248,8 +258,8 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         notIncludedDueToInterpretation = Some(HowMuchTaxHasNotBeenIncluded.TenThousandOrLess),
         maximumValueOfAssets = Some(TheMaximumValueOfAllAssets.Below500k)
       )
-      val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-      val model = FullDisclosure(
+      val instant                                         = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
+      val model                                           = FullDisclosure(
         userId = textToEncrypt,
         submissionId = textToEncrypt,
         lastUpdated = instant,

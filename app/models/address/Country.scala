@@ -36,6 +36,6 @@ final case class EncryptedCountry(
 )
 
 object EncryptedCountry {
-  implicit val encryptedValueFormat = CryptoFormats.encryptedValueFormat
+  implicit val encryptedValueFormat                     = CryptoFormats.encryptedValueFormat
   implicit val countryFormat: OFormat[EncryptedCountry] = Json.format[EncryptedCountry]
 }

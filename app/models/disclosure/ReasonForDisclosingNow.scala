@@ -58,6 +58,6 @@ final case class EncryptedReasonForDisclosingNow(
 )
 
 object EncryptedReasonForDisclosingNow {
-  implicit val encryptedValueFormat: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
+  implicit val encryptedValueFormat: Format[EncryptedValue]     = CryptoFormats.encryptedValueFormat
   implicit val format: OFormat[EncryptedReasonForDisclosingNow] = Json.format[EncryptedReasonForDisclosingNow]
 }

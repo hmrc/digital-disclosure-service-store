@@ -34,19 +34,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import java.time.Instant
 import crypto._
 
-class SubmissionRepositorySpec extends AnyFreeSpec
-  with Matchers with OptionValues
-  with DefaultPlayMongoRepositorySupport[EncryptedSubmission]
-  with ScalaFutures with IntegrationPatience
-  with BeforeAndAfterEach {
+class SubmissionRepositorySpec
+    extends AnyFreeSpec
+    with Matchers
+    with OptionValues
+    with DefaultPlayMongoRepositorySupport[EncryptedSubmission]
+    with ScalaFutures
+    with IntegrationPatience
+    with BeforeAndAfterEach {
 
-  private val now: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
-  private val clock: MutableClock = MutableClock(now)
-  private val secretKey = "zjWYSlNW79BKWTONyGFQsT7buBcWiiOkx8blzp6LNVw="
+  private val now: Instant          = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+  private val clock: MutableClock   = MutableClock(now)
+  private val secretKey             = "zjWYSlNW79BKWTONyGFQsT7buBcWiiOkx8blzp6LNVw="
   implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
   private val notificationEncrypter = new NotificationEncrypter(new SecureGCMCipherImpl)
-  private val disclosureEncrypter = new FullDisclosureEncrypter(new SecureGCMCipherImpl, notificationEncrypter)
-  private val encrypter = new SubmissionEncrypter(notificationEncrypter, disclosureEncrypter)
+  private val disclosureEncrypter   = new FullDisclosureEncrypter(new SecureGCMCipherImpl, notificationEncrypter)
+  private val encrypter             = new SubmissionEncrypter(notificationEncrypter, disclosureEncrypter)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -55,13 +58,22 @@ class SubmissionRepositorySpec extends AnyFreeSpec
 
   override lazy val repository = new SubmissionRepositoryImpl(
     mongoComponent = mongoComponent,
-    appConfig = new AppConfig(Configuration("appName" -> "test app", "lock-ttl" -> 30, "mongodb.encryption.key" -> "key", "mongodb.timeToLiveInDays" -> 30, "mongodb.updateLastUpdated" -> false)),
+    appConfig = new AppConfig(
+      Configuration(
+        "appName"                   -> "test app",
+        "lock-ttl"                  -> 30,
+        "mongodb.encryption.key"    -> "key",
+        "mongodb.timeToLiveInDays"  -> 30,
+        "mongodb.updateLastUpdated" -> false
+      )
+    ),
     clock = clock,
     encrypter = encrypter
   )
 
-  private val testNotification = Notification("user", "id", now, now, Metadata(), PersonalDetails(Background(), AboutYou()))
-  private val testDisclosure = FullDisclosure(
+  private val testNotification =
+    Notification("user", "id", now, now, Metadata(), PersonalDetails(Background(), AboutYou()))
+  private val testDisclosure   = FullDisclosure(
     userId = "user2",
     submissionId = "id2",
     lastUpdated = now,
@@ -74,7 +86,7 @@ class SubmissionRepositorySpec extends AnyFreeSpec
     otherLiabilities = OtherLiabilities(),
     reasonForDisclosingNow = ReasonForDisclosingNow(),
     customerId = None
-  )   
+  )
 
   "set" - {
 
@@ -89,13 +101,14 @@ class SubmissionRepositorySpec extends AnyFreeSpec
     }
 
     "must update a record if it exists and return it" in {
-      val expected = testNotification.copy(metadata = Metadata(reference = Some("12345")), lastUpdated = clock.instant())
+      val expected =
+        testNotification.copy(metadata = Metadata(reference = Some("12345")), lastUpdated = clock.instant())
       repository.set(testNotification).futureValue
       repository.set(expected).futureValue mustEqual true
       repository.get("user", "id").futureValue.value mustEqual expected
     }
 
-}
+  }
 
   "get by userId and id" - {
 
@@ -103,12 +116,15 @@ class SubmissionRepositorySpec extends AnyFreeSpec
       repository.set(testNotification).futureValue
       repository.set(testNotification.copy(userId = "user2", submissionId = "id")).futureValue
       repository.get("user", "id").futureValue.value mustEqual testNotification
-      repository.get("user2", "id").futureValue.value mustEqual testNotification.copy(userId = "user2", submissionId = "id")
+      repository.get("user2", "id").futureValue.value mustEqual testNotification.copy(
+        userId = "user2",
+        submissionId = "id"
+      )
     }
 
     "must return `None` when there is no item matching the userId and id" in {
       repository.set(testNotification).futureValue
-      repository.get("user", "id2").futureValue mustNot be (defined)
+      repository.get("user", "id2").futureValue mustNot be(defined)
     }
   }
 
@@ -117,7 +133,10 @@ class SubmissionRepositorySpec extends AnyFreeSpec
     "must return all items that match the userId" in {
       repository.set(testNotification).futureValue
       repository.set(testNotification.copy(userId = "user", submissionId = "id2")).futureValue
-      repository.get("user").futureValue mustEqual Seq(testNotification, testNotification.copy(userId = "user", submissionId = "id2"))
+      repository.get("user").futureValue mustEqual Seq(
+        testNotification,
+        testNotification.copy(userId = "user", submissionId = "id2")
+      )
     }
 
     "must return `Nil` when there is no item matching the userId and id" in {
@@ -133,7 +152,7 @@ class SubmissionRepositorySpec extends AnyFreeSpec
       repository.set(testNotification.copy(userId = "user", submissionId = "id2")).futureValue
       repository.set(testNotification.copy(userId = "user2", submissionId = "id")).futureValue
       repository.clear("user", "id").futureValue
-      repository.get("user", "id").futureValue mustNot be (defined)
+      repository.get("user", "id").futureValue mustNot be(defined)
       repository.get("user", "id2").futureValue mustBe defined
       repository.get("user2", "id").futureValue mustBe defined
     }
@@ -142,7 +161,7 @@ class SubmissionRepositorySpec extends AnyFreeSpec
       repository.set(testNotification.copy(userId = "user", submissionId = "id2")).futureValue
       repository.set(testNotification.copy(userId = "user2", submissionId = "id")).futureValue
       repository.clear("user", "id").futureValue
-      repository.get("user", "id").futureValue mustNot be (defined)
+      repository.get("user", "id").futureValue mustNot be(defined)
       repository.get("user", "id2").futureValue mustBe defined
       repository.get("user2", "id").futureValue mustBe defined
     }

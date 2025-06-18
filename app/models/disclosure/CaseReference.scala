@@ -21,20 +21,20 @@ import uk.gov.hmrc.crypto.EncryptedValue
 import uk.gov.hmrc.crypto.json.CryptoFormats
 
 final case class CaseReference(
-                                doYouHaveACaseReference: Option[Boolean] = None,
-                                whatIsTheCaseReference: Option[String] = None
-                              )
+  doYouHaveACaseReference: Option[Boolean] = None,
+  whatIsTheCaseReference: Option[String] = None
+)
 
 object CaseReference {
   implicit val format: OFormat[CaseReference] = Json.format[CaseReference]
 }
 
 final case class EncryptedCaseReference(
-                                         doYouHaveACaseReference: Option[Boolean] = None,
-                                         whatIsTheCaseReference: Option[EncryptedValue] = None
-                                       )
+  doYouHaveACaseReference: Option[Boolean] = None,
+  whatIsTheCaseReference: Option[EncryptedValue] = None
+)
 
 object EncryptedCaseReference {
   implicit val encryptedValueFormat: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
-  implicit val format: OFormat[EncryptedCaseReference] = Json.format[EncryptedCaseReference]
+  implicit val format: OFormat[EncryptedCaseReference]      = Json.format[EncryptedCaseReference]
 }

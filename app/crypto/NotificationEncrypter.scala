@@ -181,9 +181,9 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
   }
 
   def encryptAboutTheIndividual(
-                                 aboutTheIndividual: AboutTheIndividual,
-                                 sessionId: String
-                               ): EncryptedAboutTheIndividual = {
+    aboutTheIndividual: AboutTheIndividual,
+    sessionId: String
+  ): EncryptedAboutTheIndividual = {
 
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
@@ -202,9 +202,9 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
   }
 
   def decryptAboutTheIndividual(
-                                 aboutTheIndividual: EncryptedAboutTheIndividual,
-                                 sessionId: String
-                               ): AboutTheIndividual = {
+    aboutTheIndividual: EncryptedAboutTheIndividual,
+    sessionId: String
+  ): AboutTheIndividual = {
 
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 

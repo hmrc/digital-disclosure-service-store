@@ -19,9 +19,9 @@ package util
 import java.time.{Clock, Duration, Instant, ZoneId, ZoneOffset}
 
 final class MutableClock(
-                    private var now: Instant,
-                    zone: ZoneId
-                  ) extends Clock {
+  private var now: Instant,
+  zone: ZoneId
+) extends Clock {
 
   override def getZone: ZoneId = zone
 

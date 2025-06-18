@@ -51,5 +51,5 @@ final case class EncryptedBackground(
 
 object EncryptedBackground {
   implicit val encryptedValueFormat: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
-  implicit val format: OFormat[EncryptedBackground] = Json.format[EncryptedBackground]
+  implicit val format: OFormat[EncryptedBackground]         = Json.format[EncryptedBackground]
 }

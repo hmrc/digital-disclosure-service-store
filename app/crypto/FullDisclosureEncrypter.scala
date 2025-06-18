@@ -25,9 +25,9 @@ import config.AppConfig
 
 @Singleton
 class FullDisclosureEncrypter @Inject() (
-                                          notificationEncrypter: NotificationEncrypter,
-                                          appConfig: AppConfig
-                                        ) {
+  notificationEncrypter: NotificationEncrypter,
+  appConfig: AppConfig
+) {
 
   private val crypto = new AesGcmAdCrypto(appConfig.mongoEncryptionKey)
 
@@ -86,9 +86,9 @@ class FullDisclosureEncrypter @Inject() (
   }
 
   def encryptReasonForDisclosingNow(
-                                     reasonForDisclosingNow: ReasonForDisclosingNow,
-                                     sessionId: String
-                                   ): EncryptedReasonForDisclosingNow = {
+    reasonForDisclosingNow: ReasonForDisclosingNow,
+    sessionId: String
+  ): EncryptedReasonForDisclosingNow = {
 
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
@@ -110,9 +110,9 @@ class FullDisclosureEncrypter @Inject() (
   }
 
   def decryptReasonForDisclosingNow(
-                                     reasonForDisclosingNow: EncryptedReasonForDisclosingNow,
-                                     sessionId: String
-                                   ): ReasonForDisclosingNow = {
+    reasonForDisclosingNow: EncryptedReasonForDisclosingNow,
+    sessionId: String
+  ): ReasonForDisclosingNow = {
 
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 

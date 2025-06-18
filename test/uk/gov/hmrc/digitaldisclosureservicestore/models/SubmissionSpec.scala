@@ -19,27 +19,29 @@ package models.store
 import models._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsSuccess, Json, JsObject}
+import play.api.libs.json.{JsObject, JsSuccess, Json}
 import models.notification._
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-class SubmissionSpec extends AnyWordSpec with Matchers  {
+class SubmissionSpec extends AnyWordSpec with Matchers {
 
   "reads" should {
     "convert json to Notification where created is missing" in {
-      val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-      val testNotification: Submission = Notification("123", "123", instant, instant, Metadata(), PersonalDetails(Background(), AboutYou()))
-      val actual = Json.toJson(testNotification).as[JsObject]  - "created"
+      val instant                      = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
+      val testNotification: Submission =
+        Notification("123", "123", instant, instant, Metadata(), PersonalDetails(Background(), AboutYou()))
+      val actual                       = Json.toJson(testNotification).as[JsObject] - "created"
       actual.validate[Notification] shouldBe a[JsSuccess[_]]
     }
 
     "convert json to Notification where declaration is missing" in {
-      val instant = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-      val testNotification: Submission = Notification("123", "123", instant, instant, Metadata(), PersonalDetails(Background(), AboutYou()))
-      val actual = Json.toJson(testNotification).as[JsObject]  - "madeDeclaration"
+      val instant                      = LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
+      val testNotification: Submission =
+        Notification("123", "123", instant, instant, Metadata(), PersonalDetails(Background(), AboutYou()))
+      val actual                       = Json.toJson(testNotification).as[JsObject] - "madeDeclaration"
       actual.validate[Notification] shouldBe a[JsSuccess[_]]
     }
   }
-  
+
 }
