@@ -31,12 +31,11 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
 
   private val secretKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
   lazy implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
-  private val encrypter = new SecureGCMCipherImpl
   private val associatedText = "associatedText"
   private val textToEncrypt = "textNotEncrypted"
 
-  val notificationEncrypter = new NotificationEncrypter(encrypter)
-  val sut = new FullDisclosureEncrypter(encrypter, notificationEncrypter)
+  val notificationEncrypter = new NotificationEncrypter(appConfig)
+  val sut = new FullDisclosureEncrypter(notificationEncrypter, appConfig)
 
   "FullDisclosureEncrypter" - {
 
@@ -55,7 +54,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         otherLiabilities = OtherLiabilities(),
         reasonForDisclosingNow = ReasonForDisclosingNow(),
         customerId = None
-      )   
+      )
 
       val encryptedModel = sut.encryptFullDisclosure(model, associatedText)
 
@@ -75,7 +74,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       val model = CaseReference (
         doYouHaveACaseReference = Some(true),
         whatIsTheCaseReference = Some(textToEncrypt)
-      ) 
+      )
 
       val encryptedModel = sut.encryptCaseReference(model, associatedText)
 
@@ -171,12 +170,12 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       ))
       val whichLiabilitiesSet: Set[WhatOnshoreLiabilitiesDoYouNeedToDisclose] = Set(WhatOnshoreLiabilitiesDoYouNeedToDisclose.BusinessIncome)
       val onshoreLiabilities = OnshoreLiabilities(
-        behaviour = Some(whySet), 
-        excuseForNotNotifying = Some(ReasonableExcuseOnshore("Some excuse", "Some years")), 
-        reasonableCare = Some(ReasonableCareOnshore("Some excuse", "Some years")), 
-        excuseForNotFiling = Some(ReasonableExcuseForNotFilingOnshore("Some excuse", "Some years")), 
+        behaviour = Some(whySet),
+        excuseForNotNotifying = Some(ReasonableExcuseOnshore("Some excuse", "Some years")),
+        reasonableCare = Some(ReasonableCareOnshore("Some excuse", "Some years")),
+        excuseForNotFiling = Some(ReasonableExcuseForNotFilingOnshore("Some excuse", "Some years")),
         whatLiabilities = Some(whichLiabilitiesSet),
-        whichYears = Some(yearsSet), 
+        whichYears = Some(yearsSet),
         youHaveNotIncludedTheTaxYear = Some("Not included year"),
         youHaveNotSelectedCertainTaxYears = Some("Not included years"),
         taxBeforeThreeYears = Some("Some liabilities 1"),
@@ -206,7 +205,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         otherLiabilities = OtherLiabilities(),
         reasonForDisclosingNow = ReasonForDisclosingNow(),
         customerId = None
-      )   
+      )
 
       val encryptedModel = sut.encryptFullDisclosure(model, associatedText)
       encryptedModel.onshoreLiabilities mustEqual model.onshoreLiabilities
@@ -230,11 +229,11 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       val yearsSet: Set[OffshoreYears] = Set(TaxYearStarting(2012), ReasonableExcusePriorTo, CarelessPriorTo, DeliberatePriorTo)
       val interpretationSet: Set[YourLegalInterpretation] = Set(YourLegalInterpretation.AnotherIssue)
       val offshoreLiabilities = OffshoreLiabilities(
-        behaviour = Some(whySet), 
-        excuseForNotNotifying = Some(WhatIsYourReasonableExcuse("Some excuse", "Some years")), 
-        reasonableCare = Some(WhatReasonableCareDidYouTake("Some excuse", "Some years")), 
-        excuseForNotFiling = Some(WhatIsYourReasonableExcuseForNotFilingReturn("Some excuse", "Some years")), 
-        whichYears = Some(yearsSet), 
+        behaviour = Some(whySet),
+        excuseForNotNotifying = Some(WhatIsYourReasonableExcuse("Some excuse", "Some years")),
+        reasonableCare = Some(WhatReasonableCareDidYouTake("Some excuse", "Some years")),
+        excuseForNotFiling = Some(WhatIsYourReasonableExcuseForNotFilingReturn("Some excuse", "Some years")),
+        whichYears = Some(yearsSet),
         youHaveNotIncludedTheTaxYear = Some("Some value"),
         youHaveNotSelectedCertainTaxYears = Some("Some value"),
         taxBeforeFiveYears = Some("Some liabilities"),
@@ -263,7 +262,7 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
         otherLiabilities = OtherLiabilities(),
         reasonForDisclosingNow = ReasonForDisclosingNow(),
         customerId = None
-      )   
+      )
 
       val encryptedModel = sut.encryptFullDisclosure(model, associatedText)
       encryptedModel.onshoreLiabilities mustEqual model.onshoreLiabilities

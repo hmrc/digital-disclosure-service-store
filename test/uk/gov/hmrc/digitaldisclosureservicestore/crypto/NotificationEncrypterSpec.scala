@@ -32,12 +32,11 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
 
   private val secretKey = "VqmXp7yigDFxbCUdDdNZVIvbW6RgPNJsliv6swQNCL8="
   lazy implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
-  private val encrypter = new SecureGCMCipherImpl
   private val associatedText = "associatedText"
   private val textToEncrypt = "textNotEncrypted"
   private val dateToEncrypt = LocalDate.of(2016,1,10)
 
-  val sut = new NotificationEncrypter(encrypter)
+  val sut = new NotificationEncrypter(appConfig)
 
   val addressToEncrypt: Address = Address(
     line1 = textToEncrypt,

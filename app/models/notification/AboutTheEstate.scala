@@ -20,7 +20,8 @@ import java.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 import models.YesNoOrUnsure
 import models.address.Address
-import crypto.EncryptedValue
+import uk.gov.hmrc.crypto.EncryptedValue
+import uk.gov.hmrc.crypto.json.CryptoFormats
 import models.address.EncryptedAddress
 
 final case class AboutTheEstate(
@@ -54,5 +55,6 @@ final case class EncryptedAboutTheEstate(
 )
 
 object EncryptedAboutTheEstate {
+  implicit val encryptedValueFormat = CryptoFormats.encryptedValueFormat
   implicit val format: OFormat[EncryptedAboutTheEstate] = Json.format[EncryptedAboutTheEstate]
 }

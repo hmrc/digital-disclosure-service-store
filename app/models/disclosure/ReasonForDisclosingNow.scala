@@ -16,9 +16,10 @@
 
 package models.disclosure
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import models.{AdviceGiven, WhichEmailAddressCanWeContactYouWith, WhichTelephoneNumberCanWeContactYouWith, WhyAreYouMakingADisclosure}
-import crypto.EncryptedValue
+import uk.gov.hmrc.crypto.EncryptedValue
+import uk.gov.hmrc.crypto.json.CryptoFormats
 
 final case class ReasonForDisclosingNow(
   reason: Option[Set[WhyAreYouMakingADisclosure]] = None,
@@ -57,5 +58,6 @@ final case class EncryptedReasonForDisclosingNow(
 )
 
 object EncryptedReasonForDisclosingNow {
+  implicit val encryptedValueFormat: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
   implicit val format: OFormat[EncryptedReasonForDisclosingNow] = Json.format[EncryptedReasonForDisclosingNow]
 }

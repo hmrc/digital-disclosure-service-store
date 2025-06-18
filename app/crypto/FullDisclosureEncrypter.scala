@@ -20,12 +20,16 @@ import com.google.inject.{Inject, Singleton}
 import models.disclosure._
 import models.store.FullDisclosure
 import models.EncryptedFullDisclosure
+import uk.gov.hmrc.crypto.{AesGcmAdCrypto, EncryptedValue}
+import config.AppConfig
 
 @Singleton
 class FullDisclosureEncrypter @Inject() (
-  crypto: SecureGCMCipher,
-  notificationEncrypter: NotificationEncrypter
-) {
+                                          notificationEncrypter: NotificationEncrypter,
+                                          appConfig: AppConfig
+                                        ) {
+
+  private val crypto = new AesGcmAdCrypto(appConfig.mongoEncryptionKey)
 
   def encryptFullDisclosure(fullDisclosure: FullDisclosure, sessionId: String): EncryptedFullDisclosure =
     EncryptedFullDisclosure(
@@ -67,7 +71,7 @@ class FullDisclosureEncrypter @Inject() (
 
     EncryptedCaseReference(
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
-      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(e)
+      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(field => e(field))
     )
   }
 
@@ -77,14 +81,14 @@ class FullDisclosureEncrypter @Inject() (
 
     CaseReference(
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
-      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(d)
+      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(field => d(field))
     )
   }
 
   def encryptReasonForDisclosingNow(
-    reasonForDisclosingNow: ReasonForDisclosingNow,
-    sessionId: String
-  ): EncryptedReasonForDisclosingNow = {
+                                     reasonForDisclosingNow: ReasonForDisclosingNow,
+                                     sessionId: String
+                                   ): EncryptedReasonForDisclosingNow = {
 
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
@@ -93,22 +97,22 @@ class FullDisclosureEncrypter @Inject() (
       otherReason = reasonForDisclosingNow.otherReason,
       whyNotBeforeNow = reasonForDisclosingNow.whyNotBeforeNow,
       receivedAdvice = reasonForDisclosingNow.receivedAdvice,
-      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(e),
+      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(field => e(field)),
       adviceOnBehalfOfBusiness = reasonForDisclosingNow.adviceOnBehalfOfBusiness,
-      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(e),
+      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(field => e(field)),
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
       whichEmail = reasonForDisclosingNow.whichEmail,
       whichPhone = reasonForDisclosingNow.whichPhone,
-      email = reasonForDisclosingNow.email.map(e),
-      telephone = reasonForDisclosingNow.telephone.map(e)
+      email = reasonForDisclosingNow.email.map(field => e(field)),
+      telephone = reasonForDisclosingNow.telephone.map(field => e(field))
     )
   }
 
   def decryptReasonForDisclosingNow(
-    reasonForDisclosingNow: EncryptedReasonForDisclosingNow,
-    sessionId: String
-  ): ReasonForDisclosingNow = {
+                                     reasonForDisclosingNow: EncryptedReasonForDisclosingNow,
+                                     sessionId: String
+                                   ): ReasonForDisclosingNow = {
 
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
@@ -117,15 +121,15 @@ class FullDisclosureEncrypter @Inject() (
       otherReason = reasonForDisclosingNow.otherReason,
       whyNotBeforeNow = reasonForDisclosingNow.whyNotBeforeNow,
       receivedAdvice = reasonForDisclosingNow.receivedAdvice,
-      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(d),
+      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(field => d(field)),
       adviceOnBehalfOfBusiness = reasonForDisclosingNow.adviceOnBehalfOfBusiness,
-      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(d),
+      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(field => d(field)),
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
       whichEmail = reasonForDisclosingNow.whichEmail,
       whichPhone = reasonForDisclosingNow.whichPhone,
-      email = reasonForDisclosingNow.email.map(d),
-      telephone = reasonForDisclosingNow.telephone.map(d)
+      email = reasonForDisclosingNow.email.map(field => d(field)),
+      telephone = reasonForDisclosingNow.telephone.map(field => d(field))
     )
   }
 }

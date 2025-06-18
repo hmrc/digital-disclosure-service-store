@@ -22,9 +22,13 @@ import models.EncryptedNotification
 import models.notification._
 import models.address._
 import java.time.LocalDate
+import uk.gov.hmrc.crypto.{AesGcmAdCrypto, EncryptedValue}
+import config.AppConfig
 
 @Singleton
-class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
+class NotificationEncrypter @Inject() (appConfig: AppConfig) {
+
+  private val crypto = new AesGcmAdCrypto(appConfig.mongoEncryptionKey)
 
   def encryptNotification(notification: Notification, sessionId: String): EncryptedNotification =
     EncryptedNotification(
@@ -81,7 +85,7 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
       letterReferenceNumber = background.letterReferenceNumber,
       disclosureEntity = background.disclosureEntity,
       areYouRepresetingAnOrganisation = background.areYouRepresetingAnOrganisation,
-      organisationName = background.organisationName.map(e),
+      organisationName = background.organisationName.map(field => e(field)),
       offshoreLiabilities = background.offshoreLiabilities,
       onshoreLiabilities = background.onshoreLiabilities,
       incomeSource = background.incomeSource,
@@ -98,7 +102,7 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
       letterReferenceNumber = background.letterReferenceNumber,
       disclosureEntity = background.disclosureEntity,
       areYouRepresetingAnOrganisation = background.areYouRepresetingAnOrganisation,
-      organisationName = background.organisationName.map(d),
+      organisationName = background.organisationName.map(field => d(field)),
       offshoreLiabilities = background.offshoreLiabilities,
       onshoreLiabilities = background.onshoreLiabilities,
       incomeSource = background.incomeSource,
@@ -112,10 +116,10 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
 
     EncryptedAddress(
       line1 = e(address.line1),
-      line2 = address.line2.map(e),
-      line3 = address.line3.map(e),
-      line4 = address.line4.map(e),
-      postcode = address.postcode.map(e),
+      line2 = address.line2.map(field => e(field)),
+      line3 = address.line3.map(field => e(field)),
+      line4 = address.line4.map(field => e(field)),
+      postcode = address.postcode.map(field => e(field)),
       country = e(address.country.code)
     )
   }
@@ -126,10 +130,10 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
 
     Address(
       line1 = d(address.line1),
-      line2 = address.line2.map(d),
-      line3 = address.line3.map(d),
-      line4 = address.line4.map(d),
-      postcode = address.postcode.map(d),
+      line2 = address.line2.map(field => d(field)),
+      line3 = address.line3.map(field => d(field)),
+      line4 = address.line4.map(field => d(field)),
+      postcode = address.postcode.map(field => d(field)),
       country = Country(d(address.country))
     )
   }
@@ -139,18 +143,18 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutYou(
-      fullName = aboutYou.fullName.map(e),
-      telephoneNumber = aboutYou.telephoneNumber.map(e),
+      fullName = aboutYou.fullName.map(field => e(field)),
+      telephoneNumber = aboutYou.telephoneNumber.map(field => e(field)),
       contactPreference = aboutYou.contactPreference,
-      emailAddress = aboutYou.emailAddress.map(e),
+      emailAddress = aboutYou.emailAddress.map(field => e(field)),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutYou.mainOccupation,
       doYouHaveANino = aboutYou.doYouHaveANino,
-      nino = aboutYou.nino.map(e),
+      nino = aboutYou.nino.map(field => e(field)),
       registeredForVAT = aboutYou.registeredForVAT,
-      vatRegNumber = aboutYou.vatRegNumber.map(e),
+      vatRegNumber = aboutYou.vatRegNumber.map(field => e(field)),
       registeredForSA = aboutYou.registeredForSA,
-      sautr = aboutYou.sautr.map(e),
+      sautr = aboutYou.sautr.map(field => e(field)),
       address = aboutYou.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -160,60 +164,60 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutYou(
-      fullName = aboutYou.fullName.map(d),
-      telephoneNumber = aboutYou.telephoneNumber.map(d),
+      fullName = aboutYou.fullName.map(field => d(field)),
+      telephoneNumber = aboutYou.telephoneNumber.map(field => d(field)),
       contactPreference = aboutYou.contactPreference,
-      emailAddress = aboutYou.emailAddress.map(d),
+      emailAddress = aboutYou.emailAddress.map(field => d(field)),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutYou.mainOccupation,
       doYouHaveANino = aboutYou.doYouHaveANino,
-      nino = aboutYou.nino.map(d),
+      nino = aboutYou.nino.map(field => d(field)),
       registeredForVAT = aboutYou.registeredForVAT,
-      vatRegNumber = aboutYou.vatRegNumber.map(d),
+      vatRegNumber = aboutYou.vatRegNumber.map(field => d(field)),
       registeredForSA = aboutYou.registeredForSA,
-      sautr = aboutYou.sautr.map(d),
+      sautr = aboutYou.sautr.map(field => d(field)),
       address = aboutYou.address.map(decryptAddress(_, sessionId))
     )
   }
 
   def encryptAboutTheIndividual(
-    aboutTheIndividual: AboutTheIndividual,
-    sessionId: String
-  ): EncryptedAboutTheIndividual = {
+                                 aboutTheIndividual: AboutTheIndividual,
+                                 sessionId: String
+                               ): EncryptedAboutTheIndividual = {
 
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheIndividual(
-      fullName = aboutTheIndividual.fullName.map(e),
+      fullName = aboutTheIndividual.fullName.map(field => e(field)),
       dateOfBirth = aboutTheIndividual.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutTheIndividual.mainOccupation,
       doTheyHaveANino = aboutTheIndividual.doTheyHaveANino,
-      nino = aboutTheIndividual.nino.map(e),
+      nino = aboutTheIndividual.nino.map(field => e(field)),
       registeredForVAT = aboutTheIndividual.registeredForVAT,
-      vatRegNumber = aboutTheIndividual.vatRegNumber.map(e),
+      vatRegNumber = aboutTheIndividual.vatRegNumber.map(field => e(field)),
       registeredForSA = aboutTheIndividual.registeredForSA,
-      sautr = aboutTheIndividual.sautr.map(e),
+      sautr = aboutTheIndividual.sautr.map(field => e(field)),
       address = aboutTheIndividual.address.map(encryptAddress(_, sessionId))
     )
   }
 
   def decryptAboutTheIndividual(
-    aboutTheIndividual: EncryptedAboutTheIndividual,
-    sessionId: String
-  ): AboutTheIndividual = {
+                                 aboutTheIndividual: EncryptedAboutTheIndividual,
+                                 sessionId: String
+                               ): AboutTheIndividual = {
 
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheIndividual(
-      fullName = aboutTheIndividual.fullName.map(d),
+      fullName = aboutTheIndividual.fullName.map(field => d(field)),
       dateOfBirth = aboutTheIndividual.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutTheIndividual.mainOccupation,
       doTheyHaveANino = aboutTheIndividual.doTheyHaveANino,
-      nino = aboutTheIndividual.nino.map(d),
+      nino = aboutTheIndividual.nino.map(field => d(field)),
       registeredForVAT = aboutTheIndividual.registeredForVAT,
-      vatRegNumber = aboutTheIndividual.vatRegNumber.map(d),
+      vatRegNumber = aboutTheIndividual.vatRegNumber.map(field => d(field)),
       registeredForSA = aboutTheIndividual.registeredForSA,
-      sautr = aboutTheIndividual.sautr.map(d),
+      sautr = aboutTheIndividual.sautr.map(field => d(field)),
       address = aboutTheIndividual.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -223,8 +227,8 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheCompany(
-      name = aboutTheCompany.name.map(e),
-      registrationNumber = aboutTheCompany.registrationNumber.map(e),
+      name = aboutTheCompany.name.map(field => e(field)),
+      registrationNumber = aboutTheCompany.registrationNumber.map(field => e(field)),
       address = aboutTheCompany.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -234,8 +238,8 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheCompany(
-      name = aboutTheCompany.name.map(d),
-      registrationNumber = aboutTheCompany.registrationNumber.map(d),
+      name = aboutTheCompany.name.map(field => d(field)),
+      registrationNumber = aboutTheCompany.registrationNumber.map(field => d(field)),
       address = aboutTheCompany.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -245,7 +249,7 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheTrust(
-      name = aboutTheTrust.name.map(e),
+      name = aboutTheTrust.name.map(field => e(field)),
       address = aboutTheTrust.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -255,7 +259,7 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheTrust(
-      name = aboutTheTrust.name.map(d),
+      name = aboutTheTrust.name.map(field => d(field)),
       address = aboutTheTrust.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -265,7 +269,7 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheLLP(
-      name = aboutTheLLP.name.map(e),
+      name = aboutTheLLP.name.map(field => e(field)),
       address = aboutTheLLP.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -275,7 +279,7 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheLLP(
-      name = aboutTheLLP.name.map(d),
+      name = aboutTheLLP.name.map(field => d(field)),
       address = aboutTheLLP.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -285,15 +289,15 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheEstate(
-      fullName = aboutTheEstate.fullName.map(e),
+      fullName = aboutTheEstate.fullName.map(field => e(field)),
       dateOfBirth = aboutTheEstate.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutTheEstate.mainOccupation,
       doTheyHaveANino = aboutTheEstate.doTheyHaveANino,
-      nino = aboutTheEstate.nino.map(e),
+      nino = aboutTheEstate.nino.map(field => e(field)),
       registeredForVAT = aboutTheEstate.registeredForVAT,
-      vatRegNumber = aboutTheEstate.vatRegNumber.map(e),
+      vatRegNumber = aboutTheEstate.vatRegNumber.map(field => e(field)),
       registeredForSA = aboutTheEstate.registeredForSA,
-      sautr = aboutTheEstate.sautr.map(e),
+      sautr = aboutTheEstate.sautr.map(field => e(field)),
       address = aboutTheEstate.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -303,15 +307,15 @@ class NotificationEncrypter @Inject() (crypto: SecureGCMCipher) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheEstate(
-      fullName = aboutTheEstate.fullName.map(d),
+      fullName = aboutTheEstate.fullName.map(field => d(field)),
       dateOfBirth = aboutTheEstate.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutTheEstate.mainOccupation,
       doTheyHaveANino = aboutTheEstate.doTheyHaveANino,
-      nino = aboutTheEstate.nino.map(d),
+      nino = aboutTheEstate.nino.map(field => d(field)),
       registeredForVAT = aboutTheEstate.registeredForVAT,
-      vatRegNumber = aboutTheEstate.vatRegNumber.map(d),
+      vatRegNumber = aboutTheEstate.vatRegNumber.map(field => d(field)),
       registeredForSA = aboutTheEstate.registeredForSA,
-      sautr = aboutTheEstate.sautr.map(d),
+      sautr = aboutTheEstate.sautr.map(field => d(field)),
       address = aboutTheEstate.address.map(decryptAddress(_, sessionId))
     )
   }
