@@ -71,7 +71,7 @@ class FullDisclosureEncrypter @Inject() (
 
     EncryptedCaseReference(
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
-      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(field => e(field))
+      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(e)
     )
   }
 
@@ -81,7 +81,7 @@ class FullDisclosureEncrypter @Inject() (
 
     CaseReference(
       doYouHaveACaseReference = caseReference.doYouHaveACaseReference,
-      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(field => d(field))
+      whatIsTheCaseReference = caseReference.whatIsTheCaseReference.map(d)
     )
   }
 
@@ -97,15 +97,15 @@ class FullDisclosureEncrypter @Inject() (
       otherReason = reasonForDisclosingNow.otherReason,
       whyNotBeforeNow = reasonForDisclosingNow.whyNotBeforeNow,
       receivedAdvice = reasonForDisclosingNow.receivedAdvice,
-      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(field => e(field)),
+      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(e),
       adviceOnBehalfOfBusiness = reasonForDisclosingNow.adviceOnBehalfOfBusiness,
-      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(field => e(field)),
+      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(e),
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
       whichEmail = reasonForDisclosingNow.whichEmail,
       whichPhone = reasonForDisclosingNow.whichPhone,
-      email = reasonForDisclosingNow.email.map(field => e(field)),
-      telephone = reasonForDisclosingNow.telephone.map(field => e(field))
+      email = reasonForDisclosingNow.email.map(e),
+      telephone = reasonForDisclosingNow.telephone.map(e)
     )
   }
 
@@ -121,15 +121,15 @@ class FullDisclosureEncrypter @Inject() (
       otherReason = reasonForDisclosingNow.otherReason,
       whyNotBeforeNow = reasonForDisclosingNow.whyNotBeforeNow,
       receivedAdvice = reasonForDisclosingNow.receivedAdvice,
-      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(field => d(field)),
+      personWhoGaveAdvice = reasonForDisclosingNow.personWhoGaveAdvice.map(d),
       adviceOnBehalfOfBusiness = reasonForDisclosingNow.adviceOnBehalfOfBusiness,
-      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(field => d(field)),
+      adviceBusinessName = reasonForDisclosingNow.adviceBusinessName.map(d),
       personProfession = reasonForDisclosingNow.personProfession,
       adviceGiven = reasonForDisclosingNow.adviceGiven,
       whichEmail = reasonForDisclosingNow.whichEmail,
       whichPhone = reasonForDisclosingNow.whichPhone,
-      email = reasonForDisclosingNow.email.map(field => d(field)),
-      telephone = reasonForDisclosingNow.telephone.map(field => d(field))
+      email = reasonForDisclosingNow.email.map(d),
+      telephone = reasonForDisclosingNow.telephone.map(d)
     )
   }
 }

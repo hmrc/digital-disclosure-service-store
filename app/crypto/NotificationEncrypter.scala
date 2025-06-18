@@ -85,7 +85,7 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
       letterReferenceNumber = background.letterReferenceNumber,
       disclosureEntity = background.disclosureEntity,
       areYouRepresetingAnOrganisation = background.areYouRepresetingAnOrganisation,
-      organisationName = background.organisationName.map(field => e(field)),
+      organisationName = background.organisationName.map(e),
       offshoreLiabilities = background.offshoreLiabilities,
       onshoreLiabilities = background.onshoreLiabilities,
       incomeSource = background.incomeSource,
@@ -102,7 +102,7 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
       letterReferenceNumber = background.letterReferenceNumber,
       disclosureEntity = background.disclosureEntity,
       areYouRepresetingAnOrganisation = background.areYouRepresetingAnOrganisation,
-      organisationName = background.organisationName.map(field => d(field)),
+      organisationName = background.organisationName.map(d),
       offshoreLiabilities = background.offshoreLiabilities,
       onshoreLiabilities = background.onshoreLiabilities,
       incomeSource = background.incomeSource,
@@ -116,10 +116,10 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
 
     EncryptedAddress(
       line1 = e(address.line1),
-      line2 = address.line2.map(field => e(field)),
-      line3 = address.line3.map(field => e(field)),
-      line4 = address.line4.map(field => e(field)),
-      postcode = address.postcode.map(field => e(field)),
+      line2 = address.line2.map(e),
+      line3 = address.line3.map(e),
+      line4 = address.line4.map(e),
+      postcode = address.postcode.map(e),
       country = e(address.country.code)
     )
   }
@@ -130,10 +130,10 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
 
     Address(
       line1 = d(address.line1),
-      line2 = address.line2.map(field => d(field)),
-      line3 = address.line3.map(field => d(field)),
-      line4 = address.line4.map(field => d(field)),
-      postcode = address.postcode.map(field => d(field)),
+      line2 = address.line2.map(d),
+      line3 = address.line3.map(d),
+      line4 = address.line4.map(d),
+      postcode = address.postcode.map(d),
       country = Country(d(address.country))
     )
   }
@@ -143,18 +143,18 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutYou(
-      fullName = aboutYou.fullName.map(field => e(field)),
-      telephoneNumber = aboutYou.telephoneNumber.map(field => e(field)),
+      fullName = aboutYou.fullName.map(e),
+      telephoneNumber = aboutYou.telephoneNumber.map(e),
       contactPreference = aboutYou.contactPreference,
-      emailAddress = aboutYou.emailAddress.map(field => e(field)),
+      emailAddress = aboutYou.emailAddress.map(e),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutYou.mainOccupation,
       doYouHaveANino = aboutYou.doYouHaveANino,
-      nino = aboutYou.nino.map(field => e(field)),
+      nino = aboutYou.nino.map(e),
       registeredForVAT = aboutYou.registeredForVAT,
-      vatRegNumber = aboutYou.vatRegNumber.map(field => e(field)),
+      vatRegNumber = aboutYou.vatRegNumber.map(e),
       registeredForSA = aboutYou.registeredForSA,
-      sautr = aboutYou.sautr.map(field => e(field)),
+      sautr = aboutYou.sautr.map(e),
       address = aboutYou.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -164,18 +164,18 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutYou(
-      fullName = aboutYou.fullName.map(field => d(field)),
-      telephoneNumber = aboutYou.telephoneNumber.map(field => d(field)),
+      fullName = aboutYou.fullName.map(d),
+      telephoneNumber = aboutYou.telephoneNumber.map(d),
       contactPreference = aboutYou.contactPreference,
-      emailAddress = aboutYou.emailAddress.map(field => d(field)),
+      emailAddress = aboutYou.emailAddress.map(d),
       dateOfBirth = aboutYou.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutYou.mainOccupation,
       doYouHaveANino = aboutYou.doYouHaveANino,
-      nino = aboutYou.nino.map(field => d(field)),
+      nino = aboutYou.nino.map(d),
       registeredForVAT = aboutYou.registeredForVAT,
-      vatRegNumber = aboutYou.vatRegNumber.map(field => d(field)),
+      vatRegNumber = aboutYou.vatRegNumber.map(d),
       registeredForSA = aboutYou.registeredForSA,
-      sautr = aboutYou.sautr.map(field => d(field)),
+      sautr = aboutYou.sautr.map(d),
       address = aboutYou.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -188,15 +188,15 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheIndividual(
-      fullName = aboutTheIndividual.fullName.map(field => e(field)),
+      fullName = aboutTheIndividual.fullName.map(e),
       dateOfBirth = aboutTheIndividual.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutTheIndividual.mainOccupation,
       doTheyHaveANino = aboutTheIndividual.doTheyHaveANino,
-      nino = aboutTheIndividual.nino.map(field => e(field)),
+      nino = aboutTheIndividual.nino.map(e),
       registeredForVAT = aboutTheIndividual.registeredForVAT,
-      vatRegNumber = aboutTheIndividual.vatRegNumber.map(field => e(field)),
+      vatRegNumber = aboutTheIndividual.vatRegNumber.map(e),
       registeredForSA = aboutTheIndividual.registeredForSA,
-      sautr = aboutTheIndividual.sautr.map(field => e(field)),
+      sautr = aboutTheIndividual.sautr.map(e),
       address = aboutTheIndividual.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -209,15 +209,15 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheIndividual(
-      fullName = aboutTheIndividual.fullName.map(field => d(field)),
+      fullName = aboutTheIndividual.fullName.map(d),
       dateOfBirth = aboutTheIndividual.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutTheIndividual.mainOccupation,
       doTheyHaveANino = aboutTheIndividual.doTheyHaveANino,
-      nino = aboutTheIndividual.nino.map(field => d(field)),
+      nino = aboutTheIndividual.nino.map(d),
       registeredForVAT = aboutTheIndividual.registeredForVAT,
-      vatRegNumber = aboutTheIndividual.vatRegNumber.map(field => d(field)),
+      vatRegNumber = aboutTheIndividual.vatRegNumber.map(d),
       registeredForSA = aboutTheIndividual.registeredForSA,
-      sautr = aboutTheIndividual.sautr.map(field => d(field)),
+      sautr = aboutTheIndividual.sautr.map(d),
       address = aboutTheIndividual.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -227,8 +227,8 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheCompany(
-      name = aboutTheCompany.name.map(field => e(field)),
-      registrationNumber = aboutTheCompany.registrationNumber.map(field => e(field)),
+      name = aboutTheCompany.name.map(e),
+      registrationNumber = aboutTheCompany.registrationNumber.map(e),
       address = aboutTheCompany.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -238,8 +238,8 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheCompany(
-      name = aboutTheCompany.name.map(field => d(field)),
-      registrationNumber = aboutTheCompany.registrationNumber.map(field => d(field)),
+      name = aboutTheCompany.name.map(d),
+      registrationNumber = aboutTheCompany.registrationNumber.map(d),
       address = aboutTheCompany.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -249,7 +249,7 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheTrust(
-      name = aboutTheTrust.name.map(field => e(field)),
+      name = aboutTheTrust.name.map(e),
       address = aboutTheTrust.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -259,7 +259,7 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheTrust(
-      name = aboutTheTrust.name.map(field => d(field)),
+      name = aboutTheTrust.name.map(d),
       address = aboutTheTrust.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -269,7 +269,7 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheLLP(
-      name = aboutTheLLP.name.map(field => e(field)),
+      name = aboutTheLLP.name.map(e),
       address = aboutTheLLP.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -279,7 +279,7 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheLLP(
-      name = aboutTheLLP.name.map(field => d(field)),
+      name = aboutTheLLP.name.map(d),
       address = aboutTheLLP.address.map(decryptAddress(_, sessionId))
     )
   }
@@ -289,15 +289,15 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def e(field: String): EncryptedValue = crypto.encrypt(field, sessionId)
 
     EncryptedAboutTheEstate(
-      fullName = aboutTheEstate.fullName.map(field => e(field)),
+      fullName = aboutTheEstate.fullName.map(e),
       dateOfBirth = aboutTheEstate.dateOfBirth.map(dob => e(dob.toString)),
       mainOccupation = aboutTheEstate.mainOccupation,
       doTheyHaveANino = aboutTheEstate.doTheyHaveANino,
-      nino = aboutTheEstate.nino.map(field => e(field)),
+      nino = aboutTheEstate.nino.map(e),
       registeredForVAT = aboutTheEstate.registeredForVAT,
-      vatRegNumber = aboutTheEstate.vatRegNumber.map(field => e(field)),
+      vatRegNumber = aboutTheEstate.vatRegNumber.map(e),
       registeredForSA = aboutTheEstate.registeredForSA,
-      sautr = aboutTheEstate.sautr.map(field => e(field)),
+      sautr = aboutTheEstate.sautr.map(e),
       address = aboutTheEstate.address.map(encryptAddress(_, sessionId))
     )
   }
@@ -307,15 +307,15 @@ class NotificationEncrypter @Inject() (appConfig: AppConfig) {
     def d(field: EncryptedValue): String = crypto.decrypt(field, sessionId)
 
     AboutTheEstate(
-      fullName = aboutTheEstate.fullName.map(field => d(field)),
+      fullName = aboutTheEstate.fullName.map(d),
       dateOfBirth = aboutTheEstate.dateOfBirth.map(dob => LocalDate.parse(d(dob))),
       mainOccupation = aboutTheEstate.mainOccupation,
       doTheyHaveANino = aboutTheEstate.doTheyHaveANino,
-      nino = aboutTheEstate.nino.map(field => d(field)),
+      nino = aboutTheEstate.nino.map(d),
       registeredForVAT = aboutTheEstate.registeredForVAT,
-      vatRegNumber = aboutTheEstate.vatRegNumber.map(field => d(field)),
+      vatRegNumber = aboutTheEstate.vatRegNumber.map(d),
       registeredForSA = aboutTheEstate.registeredForSA,
-      sautr = aboutTheEstate.sautr.map(field => d(field)),
+      sautr = aboutTheEstate.sautr.map(d),
       address = aboutTheEstate.address.map(decryptAddress(_, sessionId))
     )
   }
