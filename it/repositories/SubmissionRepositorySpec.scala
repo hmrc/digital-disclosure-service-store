@@ -47,8 +47,8 @@ class SubmissionRepositorySpec
   private val clock: MutableClock   = MutableClock(now)
   private val secretKey             = "zjWYSlNW79BKWTONyGFQsT7buBcWiiOkx8blzp6LNVw="
   implicit val appConfig: AppConfig = new AppConfig(Configuration("mongodb.encryption.key" -> secretKey))
-  private val notificationEncrypter = new NotificationEncrypter(new SecureGCMCipherImpl)
-  private val disclosureEncrypter   = new FullDisclosureEncrypter(new SecureGCMCipherImpl, notificationEncrypter)
+  private val notificationEncrypter = new NotificationEncrypter(appConfig)
+  private val disclosureEncrypter   = new FullDisclosureEncrypter(notificationEncrypter, appConfig)
   private val encrypter             = new SubmissionEncrypter(notificationEncrypter, disclosureEncrypter)
 
   override def beforeEach(): Unit = {
