@@ -24,6 +24,7 @@ import models.notification._
 import models.store._
 import models._
 import play.api.Configuration
+import uk.gov.hmrc.crypto.EncryptedValue
 
 import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 
@@ -279,6 +280,39 @@ class FullDisclosureEncrypterSpec extends AnyFreeSpec with Matchers {
       sut.decryptFullDisclosure(encryptedModel, associatedText) mustEqual model
     }
 
+    "must produce different encrypted values for different session IDs" in {
+      val model = CaseReference(
+        doYouHaveACaseReference = Some(true),
+        whatIsTheCaseReference = Some("SAME-DATA")
+      )
+
+      val encrypted1 = sut.encryptCaseReference(model, "session-1")
+      val encrypted2 = sut.encryptCaseReference(model, "session-2")
+
+      encrypted1.whatIsTheCaseReference.get.value must not equal
+        encrypted2.whatIsTheCaseReference.get.value
+    }
+
+    "must fail to decrypt with wrong session ID" in {
+      val model     = CaseReference(whatIsTheCaseReference = Some("secret"))
+      val encrypted = sut.encryptCaseReference(model, "correct-session")
+
+      assertThrows[RuntimeException] {
+        sut.decryptCaseReference(encrypted, "wrong-session")
+      }
+    }
+    "must fail to decrypt corrupted encrypted data" in {
+      val model     = CaseReference(whatIsTheCaseReference = Some("secret"))
+      val encrypted = sut.encryptCaseReference(model, associatedText)
+
+      val corrupted = encrypted.copy(
+        whatIsTheCaseReference = Some(EncryptedValue("corrupted", "bad-nonce"))
+      )
+
+      assertThrows[RuntimeException] {
+        sut.decryptCaseReference(corrupted, associatedText)
+      }
+    }
   }
 
 }

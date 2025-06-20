@@ -266,6 +266,29 @@ class NotificationEncrypterSpec extends AnyFreeSpec with Matchers {
       sut.decryptNotification(encryptedModel, associatedText) mustEqual model
     }
 
+    "must produce different encrypted values for different session IDs" in {
+      val model = AboutYou(fullName = Some("SAME-NAME"))
+
+      val encrypted1 = sut.encryptAboutYou(model, "session-1")
+      val encrypted2 = sut.encryptAboutYou(model, "session-2")
+
+      encrypted1.fullName.get.value must not equal
+        encrypted2.fullName.get.value
+    }
+
+    "must fail to decrypt when using wrong session ID" in {
+      val model = AboutYou(
+        fullName = Some(textToEncrypt),
+        nino = Some("AB123456C")
+      )
+
+      val encryptedModel = sut.encryptAboutYou(model, associatedText)
+
+      assertThrows[RuntimeException] {
+        sut.decryptAboutYou(encryptedModel, "wrongSessionId")
+      }
+    }
+
   }
 
 }
