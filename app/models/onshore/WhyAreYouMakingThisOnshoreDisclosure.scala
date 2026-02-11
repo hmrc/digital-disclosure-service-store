@@ -39,7 +39,7 @@ object WhyAreYouMakingThisOnshoreDisclosure extends Enumerable.Implicits {
       extends WithName("deliberatelyDidNotFile")
       with WhyAreYouMakingThisOnshoreDisclosure
 
-  case object DidNotFileNoExcuse extends WithName("didNotFileNoExcuse") with WhyAreYouMakingThisOnshoreDisclosure  // ← ADD THIS
+  case object DidNotFileNoExcuse extends WithName("didNotFileNoExcuse") with WhyAreYouMakingThisOnshoreDisclosure
 
 
   val values: Seq[WhyAreYouMakingThisOnshoreDisclosure] = Seq(
