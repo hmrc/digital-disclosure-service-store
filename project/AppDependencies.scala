@@ -15,7 +15,6 @@ object AppDependencies {
     "ch.qos.logback"        % "logback-core"                           % "1.5.27",
     "ch.qos.logback"        % "logback-classic"                        % "1.5.27",
     "at.yawk.lz4"           %  "lz4-java"                              % "1.10.3",
-
   )
 
   val test: Seq[ModuleID] = Seq(
