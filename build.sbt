@@ -16,6 +16,7 @@ lazy val microservice = Project("digital-disclosure-service-store", file("."))
     majorVersion        := 0,
     scalaVersion        := "2.13.16",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+    excludeDependencies += ExclusionRule("org.lz4", "lz4-java"),
     libraryDependencySchemes ++= Seq(
       "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always,
     ),
