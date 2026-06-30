@@ -17,7 +17,7 @@
 package models.notification
 
 import java.time.LocalDate
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import models.YesNoOrUnsure
 import models.address.Address
 import uk.gov.hmrc.crypto.EncryptedValue
@@ -55,6 +55,6 @@ final case class EncryptedAboutTheEstate(
 )
 
 object EncryptedAboutTheEstate {
-  implicit val encryptedValueFormat                     = CryptoFormats.encryptedValueFormat
+  implicit val encryptedValueFormat: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
   implicit val format: OFormat[EncryptedAboutTheEstate] = Json.format[EncryptedAboutTheEstate]
 }

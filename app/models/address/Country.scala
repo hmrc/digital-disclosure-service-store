@@ -16,8 +16,7 @@
 
 package models.address
 
-import play.api.libs.json.Json
-import play.api.libs.json.OFormat
+import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.crypto.EncryptedValue
 import uk.gov.hmrc.crypto.json.CryptoFormats
 
@@ -36,6 +35,6 @@ final case class EncryptedCountry(
 )
 
 object EncryptedCountry {
-  implicit val encryptedValueFormat                     = CryptoFormats.encryptedValueFormat
+  implicit val encryptedValueFormat: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
   implicit val countryFormat: OFormat[EncryptedCountry] = Json.format[EncryptedCountry]
 }

@@ -24,7 +24,7 @@ import scala.util.Try
 @Singleton
 class AppConfig @Inject() (val config: Configuration) {
 
-  lazy val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInDays")
+  lazy val cacheTtl: Long = config.get[Long]("mongodb.timeToLiveInDays")
 
   val mongoEncryptionKey: String                 = config.get[String]("mongodb.encryption.key")
   val previousMongoEncryptionKey: Option[String] = Try(config.get[String]("mongodb.encryption.previousKey")).toOption

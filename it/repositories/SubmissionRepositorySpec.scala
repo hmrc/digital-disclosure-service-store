@@ -56,7 +56,7 @@ class SubmissionRepositorySpec
     clock.set(now)
   }
 
-  override lazy val repository = new SubmissionRepositoryImpl(
+  val repository: SubmissionRepositoryImpl = new SubmissionRepositoryImpl(
     mongoComponent = mongoComponent,
     appConfig = new AppConfig(
       Configuration(
