@@ -3,13 +3,13 @@ import sbt._
 object AppDependencies {
 
   private val playVersion = "play-30"
-  private val bootstrapVersion = "10.5.0"
-  private val hmrcMongoVersion = "2.12.0"
+  private val bootstrapVersion = "10.7.1"
+  private val hmrcMongoVersion = "2.13.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"            %% s"bootstrap-backend-$playVersion"    % bootstrapVersion exclude("org.apache.commons", "commons-lang3"),
     "uk.gov.hmrc.mongo"      %% s"hmrc-mongo-$playVersion"           % hmrcMongoVersion,
-    "uk.gov.hmrc"            %% s"internal-auth-client-$playVersion" % "4.3.0",
+    "uk.gov.hmrc"            %% s"internal-auth-client-$playVersion" % "4.4.0",
     "uk.gov.hmrc"            %% s"crypto-json-$playVersion"          % "8.4.0",
     "org.apache.commons"    % "commons-lang3"                          % "3.18.0",
     "ch.qos.logback"        % "logback-core"                           % "1.5.27",
