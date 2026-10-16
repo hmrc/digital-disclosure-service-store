@@ -38,5 +38,5 @@ final case class EncryptedAboutTheLLP(
 
 object EncryptedAboutTheLLP {
   implicit val encryptedValueFormat: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
-  implicit val format: OFormat[EncryptedAboutTheLLP] = Json.format[EncryptedAboutTheLLP]
+  implicit val format: OFormat[EncryptedAboutTheLLP]        = Json.format[EncryptedAboutTheLLP]
 }

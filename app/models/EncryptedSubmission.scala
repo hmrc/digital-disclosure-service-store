@@ -74,9 +74,18 @@ object EncryptedNotification {
         (__ \ "personalDetails").write[EncryptedPersonalDetails] and
         (__ \ "customerId").writeNullable[CustomerId] and
         (__ \ "madeDeclaration").write[Boolean]
-    )(encNotif => (encNotif.userId, encNotif.submissionId, encNotif.lastUpdated,
-      encNotif.created, encNotif.metadata, encNotif.personalDetails, encNotif.customerId,
-      encNotif.madeDeclaration))
+    )(encNotif =>
+      (
+        encNotif.userId,
+        encNotif.submissionId,
+        encNotif.lastUpdated,
+        encNotif.created,
+        encNotif.metadata,
+        encNotif.personalDetails,
+        encNotif.customerId,
+        encNotif.madeDeclaration
+      )
+    )
   }
 
   implicit val format: OFormat[EncryptedNotification] = OFormat(reads, writes)
@@ -139,10 +148,23 @@ object EncryptedFullDisclosure {
         (__ \ "reasonForDisclosingNow").write[EncryptedReasonForDisclosingNow] and
         (__ \ "customerId").writeNullable[CustomerId] and
         (__ \ "madeDeclaration").write[Boolean]
-    )(encFullDisc => (encFullDisc.userId, encFullDisc.submissionId, encFullDisc.lastUpdated,
-      encFullDisc.created, encFullDisc.metadata, encFullDisc.caseReference, encFullDisc.personalDetails,
-      encFullDisc.onshoreLiabilities, encFullDisc.offshoreLiabilities, encFullDisc.otherLiabilities,
-      encFullDisc.reasonForDisclosingNow, encFullDisc.customerId, encFullDisc.madeDeclaration))
+    )(encFullDisc =>
+      (
+        encFullDisc.userId,
+        encFullDisc.submissionId,
+        encFullDisc.lastUpdated,
+        encFullDisc.created,
+        encFullDisc.metadata,
+        encFullDisc.caseReference,
+        encFullDisc.personalDetails,
+        encFullDisc.onshoreLiabilities,
+        encFullDisc.offshoreLiabilities,
+        encFullDisc.otherLiabilities,
+        encFullDisc.reasonForDisclosingNow,
+        encFullDisc.customerId,
+        encFullDisc.madeDeclaration
+      )
+    )
   }
 
   implicit val format: OFormat[EncryptedFullDisclosure] = OFormat(reads, writes)
