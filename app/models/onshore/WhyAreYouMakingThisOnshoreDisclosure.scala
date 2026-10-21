@@ -41,7 +41,6 @@ object WhyAreYouMakingThisOnshoreDisclosure extends Enumerable.Implicits {
 
   case object DidNotFileNoExcuse extends WithName("didNotFileNoExcuse") with WhyAreYouMakingThisOnshoreDisclosure
 
-
   val values: Seq[WhyAreYouMakingThisOnshoreDisclosure] = Seq(
     DidNotNotifyHasExcuse,
     InaccurateReturnWithCare,

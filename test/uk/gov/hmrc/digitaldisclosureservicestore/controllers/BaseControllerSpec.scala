@@ -45,7 +45,7 @@ class BaseControllerSpec extends AnyWordSpec with Matchers with ScalaFutures {
         headers = FakeHeaders(Seq.empty),
         body = Json.toJson(testNotification)
       )
-      val result               = TestController.withValidJson[Notification](_ => Future.successful(Ok("Succeeded")))
+      val result                                     = TestController.withValidJson[Notification](_ => Future.successful(Ok("Succeeded")))
       result.futureValue shouldEqual Ok("Succeeded")
     }
 
